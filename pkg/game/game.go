@@ -43,6 +43,11 @@ func (g *Game) Initialize() {
 	// Register component types
 	g.registerComponentTypes()
 
+	// Register event handlers
+	g.world.RegisterEventHandler(ecs.EntityDefeated, func(event ecs.Event) {
+		g.turnManager.RemoveEntity(event.Entity)
+	})
+
 	// Create player
 	player := g.world.EntityManager.CreateEntity()
 	g.world.ComponentManager.AddComponent(
