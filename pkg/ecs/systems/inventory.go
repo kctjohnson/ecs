@@ -3,6 +3,7 @@ package systems
 import (
 	"ecs/pkg/ecs"
 	"ecs/pkg/ecs/components"
+	"fmt"
 )
 
 type InventorySystem struct{}
@@ -14,6 +15,7 @@ func (is *InventorySystem) Update(world *ecs.World) {
 	)
 
 	for _, entity := range entitiesWithPickupIntent {
+		fmt.Printf("Found entity with pickup intent: %d\n", entity)
 		pickupIntentComponent, _ := world.ComponentManager.GetComponent(
 			entity,
 			components.PickupIntent,
@@ -56,6 +58,8 @@ func (is *InventorySystem) Update(world *ecs.World) {
 
 			// Remove item from world position
 			world.ComponentManager.RemoveComponent(pickupIntent.Target, components.Position)
+
+			fmt.Printf("Added item to inventory")
 
 			// Queue inventory_changed event
 			world.QueueEvent(ecs.ItemPickedUp, entity, map[string]any{

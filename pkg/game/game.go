@@ -29,6 +29,7 @@ func NewGame() *Game {
 	// Register core ECS systems
 	world.AddSystem(&systems.MovementSystem{})
 	world.AddSystem(&systems.CombatSystem{})
+	world.AddSystem(&systems.InventorySystem{})
 
 	return &Game{
 		world:        world,
@@ -70,6 +71,14 @@ func (g *Game) Initialize() {
 		components.PlayerControlled,
 		&components.PlayerControlledComponent{},
 	)
+	g.world.ComponentManager.AddComponent(
+		player,
+		components.Inventory,
+		&components.InventoryComponent{
+			Items:       []ecs.Entity{},
+			MaxCapacity: 30,
+		},
+	)
 	g.turnManager.AddEntity(player)
 
 	// Create enemy
@@ -90,6 +99,28 @@ func (g *Game) Initialize() {
 		&components.SpriteComponent{Char: 'E'},
 	)
 	g.turnManager.AddEntity(enemy)
+
+	// Create item
+	item := g.world.EntityManager.CreateEntity()
+	g.world.ComponentManager.AddComponent(
+		item,
+		components.Position,
+		&components.PositionComponent{X: 5, Y: 5},
+	)
+	g.world.ComponentManager.AddComponent(
+		enemy,
+		components.Sprite,
+		&components.SpriteComponent{Char: 'o'},
+	)
+	g.world.ComponentManager.AddComponent(
+		enemy,
+		components.Item,
+		&components.ItemComponent{
+			Name:   "Red Potion",
+			Weight: 1,
+			Value:  37,
+		},
+	)
 }
 
 func (g *Game) registerComponentTypes() {
@@ -97,9 +128,13 @@ func (g *Game) registerComponentTypes() {
 	g.world.ComponentManager.RegisterComponentType(components.Position)
 	g.world.ComponentManager.RegisterComponentType(components.Health)
 	g.world.ComponentManager.RegisterComponentType(components.Sprite)
+	g.world.ComponentManager.RegisterComponentType(components.Inventory)
+	g.world.ComponentManager.RegisterComponentType(components.Item)
+	g.world.ComponentManager.RegisterComponentType(components.Equippable)
 	g.world.ComponentManager.RegisterComponentType(components.PlayerControlled)
 	g.world.ComponentManager.RegisterComponentType(components.MoveIntent)
 	g.world.ComponentManager.RegisterComponentType(components.AttackIntent)
+	g.world.ComponentManager.RegisterComponentType(components.PickupIntent)
 }
 
 func (g *Game) Run() {

@@ -8,6 +8,8 @@ const (
 	Health           ecs.ComponentType = "health"
 	Sprite           ecs.ComponentType = "sprite"
 	Inventory        ecs.ComponentType = "inventory"
+	Item             ecs.ComponentType = "item"
+	Equippable       ecs.ComponentType = "equippable"
 	PlayerControlled ecs.ComponentType = "player_controlled"
 	MoveIntent       ecs.ComponentType = "move_intent"
 	AttackIntent     ecs.ComponentType = "attack_intent"
@@ -61,11 +63,15 @@ type InventoryComponent struct {
 	MaxCapacity int
 }
 
+func (i InventoryComponent) IsComponent() {}
+
 type ItemComponent struct {
 	Name   string
 	Weight int
 	Value  int
 }
+
+func (i ItemComponent) IsComponent() {}
 
 type EquippableComponent struct {
 	Slot string // "head", "torso", "legs", "hands", "feet"
@@ -76,3 +82,5 @@ func (i EquippableComponent) IsComponent() {}
 type PickupIntentComponent struct {
 	Target ecs.Entity
 }
+
+func (p PickupIntentComponent) IsComponent() {}

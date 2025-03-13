@@ -17,6 +17,7 @@ func NewWorld() *World {
 		ComponentManager: NewComponentManager(),
 		systems:          []System{},
 		eventQueue:       []Event{},
+		eventHandlers:    make(map[EventType][]func(Event)),
 	}
 }
 

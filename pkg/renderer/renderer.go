@@ -38,6 +38,7 @@ func (r *Renderer) Render() {
 	for _, entity := range entities {
 		posComp, hasPos := r.world.ComponentManager.GetComponent(entity, components.Position)
 		spriteComp, hasSprite := r.world.ComponentManager.GetComponent(entity, components.Sprite)
+		fmt.Printf("Passing entity %d\n", entity)
 
 		if !hasPos || !hasSprite {
 			continue
@@ -68,6 +69,20 @@ func (r *Renderer) Render() {
 		if hasHealth {
 			health := healthComp.(*components.HealthComponent)
 			fmt.Printf("Entity %d: HP %d/%d\n", entity, health.HP, health.MaxHP)
+		}
+	}
+
+	// Display inventory for player
+	for _, ent := range entities {
+		if inventoryComp, hasInventory := r.world.ComponentManager.GetComponent(ent, components.Inventory); hasInventory {
+			inventory := inventoryComp.(*components.InventoryComponent)
+			fmt.Println("\nItems:")
+			for _, itemEnt := range inventory.Items {
+				itemComp, _ := r.world.ComponentManager.GetComponent(itemEnt, components.Item)
+				item := itemComp.(*components.ItemComponent)
+				fmt.Printf("%s [%d gp] [%d lb]\n", item.Name, item.Value, item.Weight)
+			}
+			break
 		}
 	}
 }
