@@ -79,8 +79,6 @@ type EquippableComponent struct {
 
 func (i EquippableComponent) IsComponent() {}
 
-type PickupIntentComponent struct {
-	Target ecs.Entity
-}
+type PickupIntentComponent struct{}
 
 func (p PickupIntentComponent) IsComponent() {}

@@ -76,11 +76,25 @@ func (r *Renderer) Render() {
 	for _, ent := range entities {
 		if inventoryComp, hasInventory := r.world.ComponentManager.GetComponent(ent, components.Inventory); hasInventory {
 			inventory := inventoryComp.(*components.InventoryComponent)
-			fmt.Println("\nItems:")
+
+			if len(inventory.Items) == 0 {
+				fmt.Println("\nInventory: Empty")
+				continue
+			}
+
+			fmt.Println("\nInventory Items:")
 			for _, itemEnt := range inventory.Items {
-				itemComp, _ := r.world.ComponentManager.GetComponent(itemEnt, components.Item)
+				if !r.world.EntityManager.HasEntity(itemEnt) {
+					continue
+				}
+
+				itemComp, hasItem := r.world.ComponentManager.GetComponent(itemEnt, components.Item)
+				if !hasItem {
+					continue
+				}
+
 				item := itemComp.(*components.ItemComponent)
-				fmt.Printf("%s [%d gp] [%d lb]\n", item.Name, item.Value, item.Weight)
+				fmt.Printf("- %s [%d gp] [%d lb]\n", item.Name, item.Value, item.Weight)
 			}
 			break
 		}

@@ -13,11 +13,12 @@ import (
 
 // Game coordinates all game systems
 type Game struct {
-	world        *ecs.World
-	renderer     *renderer.Renderer
-	inputHandler *input.InputHandler
-	turnManager  *turnmanager.TurnManager
-	aiSystem     *systems.AISystem
+	world         *ecs.World
+	renderer      *renderer.Renderer
+	inputHandler  *input.InputHandler
+	turnManager   *turnmanager.TurnManager
+	aiSystem      *systems.AISystem
+	entityService *EntityService
 }
 
 func NewGame() *Game {
@@ -32,11 +33,12 @@ func NewGame() *Game {
 	world.AddSystem(&systems.InventorySystem{})
 
 	return &Game{
-		world:        world,
-		renderer:     renderer.NewRenderer(world, 10, 10),
-		inputHandler: input.NewInputHandler(world),
-		turnManager:  turnmanager.NewTurnManager(world),
-		aiSystem:     aiSystem,
+		world:         world,
+		renderer:      renderer.NewRenderer(world, 10, 10),
+		inputHandler:  input.NewInputHandler(world),
+		turnManager:   turnmanager.NewTurnManager(world),
+		aiSystem:      aiSystem,
+		entityService: NewEntityService(world),
 	}
 }
 
@@ -50,77 +52,27 @@ func (g *Game) Initialize() {
 	})
 
 	// Create player
-	player := g.world.EntityManager.CreateEntity()
-	g.world.ComponentManager.AddComponent(
-		player,
-		components.Position,
-		&components.PositionComponent{X: 3, Y: 7},
-	)
-	g.world.ComponentManager.AddComponent(
-		player,
-		components.Health,
-		&components.HealthComponent{HP: 100, MaxHP: 100},
-	)
-	g.world.ComponentManager.AddComponent(
-		player,
-		components.Sprite,
-		&components.SpriteComponent{Char: '@'},
-	)
-	g.world.ComponentManager.AddComponent(
-		player,
-		components.PlayerControlled,
-		&components.PlayerControlledComponent{},
-	)
-	g.world.ComponentManager.AddComponent(
-		player,
-		components.Inventory,
-		&components.InventoryComponent{
-			Items:       []ecs.Entity{},
-			MaxCapacity: 30,
-		},
-	)
+	player := g.entityService.CreatePlayer(PlayerParams{
+		X: 3, Y: 7,
+		HP: 100, MaxHP: 100,
+	})
 	g.turnManager.AddEntity(player)
 
 	// Create enemy
-	enemy := g.world.EntityManager.CreateEntity()
-	g.world.ComponentManager.AddComponent(
-		enemy,
-		components.Position,
-		&components.PositionComponent{X: 7, Y: 3},
-	)
-	g.world.ComponentManager.AddComponent(
-		enemy,
-		components.Health,
-		&components.HealthComponent{HP: 50, MaxHP: 50},
-	)
-	g.world.ComponentManager.AddComponent(
-		enemy,
-		components.Sprite,
-		&components.SpriteComponent{Char: 'E'},
-	)
+	enemy := g.entityService.CreateEnemy(EnemyParams{
+		X: 7, Y: 3,
+		HP: 50, MaxHP: 50,
+		Sprite: 'E',
+	})
 	g.turnManager.AddEntity(enemy)
 
 	// Create item
-	item := g.world.EntityManager.CreateEntity()
-	g.world.ComponentManager.AddComponent(
-		item,
-		components.Position,
-		&components.PositionComponent{X: 5, Y: 5},
-	)
-	g.world.ComponentManager.AddComponent(
-		enemy,
-		components.Sprite,
-		&components.SpriteComponent{Char: 'o'},
-	)
-	g.world.ComponentManager.AddComponent(
-		enemy,
-		components.Item,
-		&components.ItemComponent{
-			Name:   "Red Potion",
-			Weight: 1,
-			Value:  37,
-		},
-	)
+	g.entityService.CreateItem(ItemParams{
+		X: 5, Y: 5,
+		Name:   "Red Potion",
+		Weight: 1, Value: 37,
+		Sprite: 'o',
+	})
 }
 
 func (g *Game) registerComponentTypes() {

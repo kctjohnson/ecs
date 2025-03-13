@@ -48,11 +48,10 @@ func (ih *InputHandler) ProcessInput() bool {
 
 	switch input {
 	case "pickup":
-		fmt.Printf("Adding pickup intent...\n")
 		ih.world.ComponentManager.AddComponent(
 			ih.currentEntity,
 			components.PickupIntent,
-			&components.PickupIntentComponent{Target: 3},
+			&components.PickupIntentComponent{},
 		)
 	case "move up":
 		ih.world.ComponentManager.AddComponent(
