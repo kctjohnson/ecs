@@ -7,9 +7,11 @@ const (
 	Position         ecs.ComponentType = "position"
 	Health           ecs.ComponentType = "health"
 	Sprite           ecs.ComponentType = "sprite"
+	Inventory        ecs.ComponentType = "inventory"
 	PlayerControlled ecs.ComponentType = "player_controlled"
 	MoveIntent       ecs.ComponentType = "move_intent"
 	AttackIntent     ecs.ComponentType = "attack_intent"
+	PickupIntent     ecs.ComponentType = "pickup_intent"
 )
 
 // PositionComponent stores entity location
@@ -53,3 +55,24 @@ type AttackIntentComponent struct {
 }
 
 func (a AttackIntentComponent) IsComponent() {}
+
+type InventoryComponent struct {
+	Items       []ecs.Entity
+	MaxCapacity int
+}
+
+type ItemComponent struct {
+	Name   string
+	Weight int
+	Value  int
+}
+
+type EquippableComponent struct {
+	Slot string // "head", "torso", "legs", "hands", "feet"
+}
+
+func (i EquippableComponent) IsComponent() {}
+
+type PickupIntentComponent struct {
+	Target ecs.Entity
+}

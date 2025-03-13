@@ -47,6 +47,7 @@ const (
 	EntityDefeated EventType = "entity_defeated"
 	HealthChanged  EventType = "health_changed"
 	TurnEnded      EventType = "turn_ended"
+	ItemPickedUp   EventType = "item_picked_up"
 )
 
 type Event struct {
