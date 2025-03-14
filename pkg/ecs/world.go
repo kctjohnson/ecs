@@ -49,6 +49,7 @@ const (
 	HealthChanged  EventType = "health_changed"
 	TurnEnded      EventType = "turn_ended"
 	ItemPickedUp   EventType = "item_picked_up"
+	ItemUsed       EventType = "item_used"
 )
 
 type Event struct {

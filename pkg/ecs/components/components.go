@@ -10,10 +10,12 @@ const (
 	Inventory        ecs.ComponentType = "inventory"
 	Item             ecs.ComponentType = "item"
 	Equippable       ecs.ComponentType = "equippable"
+	Usable           ecs.ComponentType = "usable"
 	PlayerControlled ecs.ComponentType = "player_controlled"
 	MoveIntent       ecs.ComponentType = "move_intent"
 	AttackIntent     ecs.ComponentType = "attack_intent"
 	PickupIntent     ecs.ComponentType = "pickup_intent"
+	UseItemIntent    ecs.ComponentType = "use_item_intent"
 )
 
 // PositionComponent stores entity location
@@ -43,21 +45,6 @@ type PlayerControlledComponent struct{}
 
 func (p PlayerControlledComponent) IsComponent() {}
 
-// MoveIntentComponent represents intention to move
-type MoveIntentComponent struct {
-	DX, DY int
-}
-
-func (m MoveIntentComponent) IsComponent() {}
-
-// AttackIntentComponent represents intention to attack
-type AttackIntentComponent struct {
-	Target ecs.Entity
-	Damage int
-}
-
-func (a AttackIntentComponent) IsComponent() {}
-
 type InventoryComponent struct {
 	Items       []ecs.Entity
 	MaxCapacity int
@@ -79,6 +66,36 @@ type EquippableComponent struct {
 
 func (i EquippableComponent) IsComponent() {}
 
+type UsableComponent struct {
+	Effect UsableEffect
+	Power  int
+}
+
+func (u UsableComponent) IsComponent() {}
+
+// MoveIntentComponent represents intention to move
+type MoveIntentComponent struct {
+	DX, DY int
+}
+
+func (m MoveIntentComponent) IsComponent() {}
+
+// AttackIntentComponent represents intention to attack
+type AttackIntentComponent struct {
+	Target ecs.Entity
+	Damage int
+}
+
+func (a AttackIntentComponent) IsComponent() {}
+
 type PickupIntentComponent struct{}
 
 func (p PickupIntentComponent) IsComponent() {}
+
+type UseItemIntentComponent struct {
+	ItemEntity ecs.Entity
+	Consumer   ecs.Entity
+	Target     ecs.Entity
+}
+
+func (u UseItemIntentComponent) IsComponent() {}

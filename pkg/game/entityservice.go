@@ -119,6 +119,14 @@ func (es *EntityService) CreateItem(itemParams ItemParams) ecs.Entity {
 			Value:  itemParams.Value,
 		},
 	)
+	es.world.ComponentManager.AddComponent(
+		item,
+		components.Usable,
+		&components.UsableComponent{
+			Effect: components.HealEffect,
+			Power:  20,
+		},
+	)
 
 	return item
 }

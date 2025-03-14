@@ -36,7 +36,7 @@ func (ms *MovementSystem) Update(world *ecs.World) {
 		world.ComponentManager.RemoveComponent(entity, components.MoveIntent)
 
 		// QUeue a movement event for other systems (like renderer)
-		world.QueueEvent("entity_moved", entity, map[string]interface{}{
+		world.QueueEvent("entity_moved", entity, map[string]any{
 			"old_x": pos.X - moveIntent.DX,
 			"old_y": pos.Y - moveIntent.DY,
 			"new_x": pos.X,

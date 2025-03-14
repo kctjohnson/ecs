@@ -83,7 +83,7 @@ func (r *Renderer) Render() {
 			}
 
 			fmt.Println("\nInventory Items:")
-			for _, itemEnt := range inventory.Items {
+			for i, itemEnt := range inventory.Items {
 				if !r.world.EntityManager.HasEntity(itemEnt) {
 					continue
 				}
@@ -94,7 +94,7 @@ func (r *Renderer) Render() {
 				}
 
 				item := itemComp.(*components.ItemComponent)
-				fmt.Printf("- %s [%d gp] [%d lb]\n", item.Name, item.Value, item.Weight)
+				fmt.Printf("%d) %s [%d gp] [%d lb]\n", i+1, item.Name, item.Value, item.Weight)
 			}
 			break
 		}

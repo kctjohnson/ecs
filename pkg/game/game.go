@@ -31,6 +31,7 @@ func NewGame() *Game {
 	world.AddSystem(&systems.MovementSystem{})
 	world.AddSystem(&systems.CombatSystem{})
 	world.AddSystem(&systems.InventorySystem{})
+	world.AddSystem(&systems.UsableSystem{})
 
 	return &Game{
 		world:         world,

@@ -103,6 +103,44 @@ func (ih *InputHandler) ProcessInput() bool {
 			} else {
 				fmt.Println("Invalid target ID or self-attack not allowed")
 			}
+		} else if len(parts) == 2 && parts[0] == "use" {
+			// Use the first item in the inventory
+			inventoryComp, found := ih.world.ComponentManager.GetComponent(
+				ih.currentEntity,
+				components.Inventory,
+			)
+			if !found {
+				fmt.Println("No items in inventory")
+				return false
+			}
+
+			inventory := inventoryComp.(*components.InventoryComponent)
+			if len(inventory.Items) == 0 {
+				fmt.Println("No items in inventory")
+				return false
+			}
+
+			// Use format is "use <item_index>"
+			itemIndex, err := strconv.Atoi(parts[1])
+			if err != nil {
+				fmt.Println("Invalid item")
+				return false
+			}
+
+			if itemIndex <= 0 || itemIndex > len(inventory.Items) {
+				fmt.Println("Invalid item")
+				return false
+			}
+
+			ih.world.ComponentManager.AddComponent(
+				ih.currentEntity,
+				components.UseItemIntent,
+				&components.UseItemIntentComponent{
+					ItemEntity: inventory.Items[itemIndex-1], // -1 for 0-based index
+					Consumer:   ih.currentEntity,
+					Target:     ih.currentEntity, // Self-target for now
+				},
+			)
 		} else {
 			fmt.Println("Invalid command")
 		}
