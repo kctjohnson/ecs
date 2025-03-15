@@ -121,7 +121,7 @@ func (g *Game) Initialize() {
 		Weight: 1, Value: 37,
 		Sprite: 'o',
 		Effect: components.HealEffect,
-		Power:  0,
+		Power:  20,
 	})
 
 	g.entityService.CreateItem(ItemParams{
