@@ -18,6 +18,7 @@ func NewEntityService(world *ecs.World) *EntityService {
 type PlayerParams struct {
 	X, Y      int
 	HP, MaxHP int
+	Strength  int
 }
 
 func (es *EntityService) CreatePlayer(playerParams PlayerParams) ecs.Entity {
@@ -40,6 +41,11 @@ func (es *EntityService) CreatePlayer(playerParams PlayerParams) ecs.Entity {
 		player,
 		components.Health,
 		&components.HealthComponent{HP: playerParams.HP, MaxHP: playerParams.MaxHP},
+	)
+	es.world.ComponentManager.AddComponent(
+		player,
+		components.Strength,
+		&components.StrengthComponent{Strength: playerParams.Strength},
 	)
 	es.world.ComponentManager.AddComponent(
 		player,
@@ -67,6 +73,7 @@ type EnemyParams struct {
 	X, Y      int
 	HP, MaxHP int
 	Sprite    rune
+	Strength  int
 }
 
 func (es *EntityService) CreateEnemy(enemyParams EnemyParams) ecs.Entity {
@@ -80,6 +87,11 @@ func (es *EntityService) CreateEnemy(enemyParams EnemyParams) ecs.Entity {
 		enemy,
 		components.Health,
 		&components.HealthComponent{HP: enemyParams.HP, MaxHP: enemyParams.MaxHP},
+	)
+	es.world.ComponentManager.AddComponent(
+		enemy,
+		components.Strength,
+		&components.StrengthComponent{Strength: enemyParams.Strength},
 	)
 	es.world.ComponentManager.AddComponent(
 		enemy,

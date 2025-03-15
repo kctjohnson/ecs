@@ -45,7 +45,7 @@ func NewGame() *Game {
 		width:         20,
 		height:        10,
 		gameOver:      false,
-		statusMessage: "Use arrow keys to move, space to pick up items, 'u' to use items",
+		statusMessage: "Use arrow keys to move, space to pick up items, 1-9 to use items, Q to quit",
 	}
 }
 
@@ -96,6 +96,7 @@ func (g *Game) Initialize() {
 	player := g.entityService.CreatePlayer(PlayerParams{
 		X: 3, Y: 7,
 		HP: 100, MaxHP: 100,
+		Strength: 15,
 	})
 	g.turnManager.AddEntity(player)
 
@@ -103,14 +104,16 @@ func (g *Game) Initialize() {
 	enemy := g.entityService.CreateEnemy(EnemyParams{
 		X: 7, Y: 3,
 		HP: 50, MaxHP: 50,
-		Sprite: 'E',
+		Strength: 10,
+		Sprite:   'G',
 	})
 	g.turnManager.AddEntity(enemy)
 
 	enemy2 := g.entityService.CreateEnemy(EnemyParams{
 		X: 12, Y: 5,
-		HP: 40, MaxHP: 40,
-		Sprite: 'E',
+		HP: 30, MaxHP: 30,
+		Strength: 7,
+		Sprite:   'g',
 	})
 	g.turnManager.AddEntity(enemy2)
 
@@ -138,6 +141,7 @@ func (g *Game) registerComponentTypes() {
 	// Register all component types with the component manager
 	g.world.ComponentManager.RegisterComponentType(components.Position)
 	g.world.ComponentManager.RegisterComponentType(components.Health)
+	g.world.ComponentManager.RegisterComponentType(components.Strength)
 	g.world.ComponentManager.RegisterComponentType(components.Sprite)
 	g.world.ComponentManager.RegisterComponentType(components.Inventory)
 	g.world.ComponentManager.RegisterComponentType(components.Item)
@@ -201,10 +205,18 @@ func (g *Game) ProcessPlayerMove(dx, dy int) {
 		// If entity is at target position, initiate combat
 		if entPos.X == targetX && entPos.Y == targetY {
 			if g.world.ComponentManager.HasComponent(entity, components.Health) {
+				// Get the strength of the player
+				damage := 10
+				strengthComp, hasStrength := g.world.ComponentManager.GetComponent(player, components.Strength)
+				if hasStrength {
+					strength := strengthComp.(*components.StrengthComponent)
+					damage = strength.Strength
+				}
+
 				g.world.ComponentManager.AddComponent(
 					player,
 					components.AttackIntent,
-					&components.AttackIntentComponent{Target: entity, Damage: 15},
+					&components.AttackIntentComponent{Target: entity, Damage: damage},
 				)
 				return
 			}
@@ -417,7 +429,13 @@ func (g *Game) Render() string {
 			if g.world.ComponentManager.HasComponent(entity, components.PlayerControlled) {
 				entityType = "Player"
 			} else {
-				entityType = fmt.Sprintf("Enemy %d", entity)
+				spriteComp, hasSprite := g.world.ComponentManager.GetComponent(entity, components.Sprite)
+				if hasSprite {
+					sprite := spriteComp.(*components.SpriteComponent)
+					entityType = fmt.Sprintf("%c", sprite.Char)
+				} else {
+					entityType = fmt.Sprintf("Enemy %d", entity)
+				}
 			}
 
 			board += fmt.Sprintf("%s: HP %d/%d\n", entityType, health.HP, health.MaxHP)

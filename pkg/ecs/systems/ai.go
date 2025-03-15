@@ -40,11 +40,22 @@ func (ai *AISystem) Update(world *ecs.World) {
 
 	// Check if adjacent to target
 	if ai.isAdjacent(world, ai.CurrentEntity, target) {
+		// Get the strength of the AI entity
+		damage := 10
+		strengthComp, hasStrength := world.ComponentManager.GetComponent(
+			ai.CurrentEntity,
+			components.Strength,
+		)
+		if hasStrength {
+			strength := strengthComp.(*components.StrengthComponent)
+			damage = strength.Strength
+		}
+
 		// Attack if adjacent
 		world.ComponentManager.AddComponent(
 			ai.CurrentEntity,
 			components.AttackIntent,
-			&components.AttackIntentComponent{Target: target, Damage: 10},
+			&components.AttackIntentComponent{Target: target, Damage: damage},
 		)
 	} else {
 		// Move toward target

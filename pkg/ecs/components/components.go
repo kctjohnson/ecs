@@ -6,6 +6,7 @@ import "ecs/pkg/ecs"
 const (
 	Position         ecs.ComponentType = "position"
 	Health           ecs.ComponentType = "health"
+	Strength         ecs.ComponentType = "strength"
 	Sprite           ecs.ComponentType = "sprite"
 	Inventory        ecs.ComponentType = "inventory"
 	Item             ecs.ComponentType = "item"
@@ -32,6 +33,13 @@ type HealthComponent struct {
 }
 
 func (h HealthComponent) IsComponent() {}
+
+// StrengthComponent stores entity strength (damage)
+type StrengthComponent struct {
+	Strength int
+}
+
+func (s StrengthComponent) IsComponent() {}
 
 // SpriteComponent stores visual representation
 type SpriteComponent struct {
