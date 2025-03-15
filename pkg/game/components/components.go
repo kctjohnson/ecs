@@ -67,6 +67,7 @@ type PlayerControlledComponent struct {
 type InventoryComponent struct {
 	ComponentType
 	Items       []ecs.Entity
+	Slots       map[EquipmentSlot]ecs.Entity
 	MaxCapacity int
 }
 
@@ -75,6 +76,16 @@ type ItemComponent struct {
 	Name   string
 	Weight int
 	Value  int
+}
+
+type WeaponComponent struct {
+	ComponentType
+	Damage int
+}
+
+type ArmorComponent struct {
+	ComponentType
+	Defense int
 }
 
 type EquippableComponent struct {

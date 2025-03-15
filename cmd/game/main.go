@@ -1,8 +1,11 @@
 package main
 
-import "ecs/pkg/game"
+import (
+	"ecs/pkg/game"
+	"ecs/pkg/game/model"
+)
 
 func main() {
 	game := game.NewGame()
-	game.Run()
+	model.RunGame(game)
 }

@@ -2,7 +2,6 @@ package game
 
 import (
 	"fmt"
-	"os"
 
 	"ecs/pkg/ecs"
 	"ecs/pkg/game/components"
@@ -10,7 +9,6 @@ import (
 	"ecs/pkg/game/systems"
 	"ecs/pkg/mathutils"
 	"ecs/pkg/turnmanager"
-	"slices"
 )
 
 // Game coordinates all game systems
@@ -85,7 +83,12 @@ func (g *Game) Initialize() {
 				if target, ok := event.Data["target"].(ecs.Entity); ok {
 					if healthComp, hasHealth := g.world.ComponentManager.GetComponent(target, components.Health); hasHealth {
 						health := healthComp.(*components.HealthComponent)
-						g.statusMessage += fmt.Sprintf(" on %d (HP %d/%d)", target, health.HP, health.MaxHP)
+						g.statusMessage += fmt.Sprintf(
+							" on %d (HP %d/%d)",
+							target,
+							health.HP,
+							health.MaxHP,
+						)
 					}
 				}
 			}
@@ -144,6 +147,22 @@ func (g *Game) registerComponentTypes() {
 	}
 }
 
+func (g Game) GetWidth() int {
+	return g.width
+}
+
+func (g Game) GetHeight() int {
+	return g.height
+}
+
+func (g Game) GetIsGameOver() bool {
+	return g.gameOver
+}
+
+func (g Game) GetStatusMessage() string {
+	return g.statusMessage
+}
+
 func (g *Game) GetPlayerEntity() ecs.Entity {
 	entsWithPlayer := g.world.ComponentManager.GetAllEntitiesWithComponent(
 		components.PlayerControlled,
@@ -152,6 +171,25 @@ func (g *Game) GetPlayerEntity() ecs.Entity {
 		return entsWithPlayer[0]
 	}
 	return -1
+}
+
+func (g *Game) GetEntities() []ecs.Entity {
+	return g.world.EntityManager.GetAllEntities()
+}
+
+func (g *Game) HasComponent(entity ecs.Entity, componentType ecs.ComponentType) bool {
+	return g.world.ComponentManager.HasComponent(entity, componentType)
+}
+
+func (g *Game) GetComponent(
+	entity ecs.Entity,
+	componentType ecs.ComponentType,
+) (ecs.Component, bool) {
+	return g.world.ComponentManager.GetComponent(entity, componentType)
+}
+
+func (g *Game) GetCurrentEntity() ecs.Entity {
+	return g.turnManager.GetCurrentEntity()
 }
 
 // ProcessPlayerMove processes player movement input
@@ -197,7 +235,10 @@ func (g *Game) ProcessPlayerMove(dx, dy int) {
 			if g.world.ComponentManager.HasComponent(entity, components.Health) {
 				// Get the strength of the player
 				damage := 10
-				strengthComp, hasStrength := g.world.ComponentManager.GetComponent(player, components.Strength)
+				strengthComp, hasStrength := g.world.ComponentManager.GetComponent(
+					player,
+					components.Strength,
+				)
 				if hasStrength {
 					strength := strengthComp.(*components.StrengthComponent)
 					damage = strength.Strength
@@ -266,7 +307,10 @@ func (g *Game) ProcessPlayerUseItem(itemIndex int) {
 	}
 
 	// Make sure item is usable
-	usableComp, hasUsable := g.world.ComponentManager.GetComponent(inventory.Items[itemIndex], components.Usable)
+	usableComp, hasUsable := g.world.ComponentManager.GetComponent(
+		inventory.Items[itemIndex],
+		components.Usable,
+	)
 	if !hasUsable {
 		g.statusMessage = "Item is not usable"
 		return
@@ -299,7 +343,10 @@ func (g *Game) ProcessPlayerUseItem(itemIndex int) {
 			}
 
 			// Check if entity has position and health components
-			entPosComp, hasEntPos := g.world.ComponentManager.GetComponent(entity, components.Position)
+			entPosComp, hasEntPos := g.world.ComponentManager.GetComponent(
+				entity,
+				components.Position,
+			)
 			_, hasEntHealth := g.world.ComponentManager.GetComponent(entity, components.Health)
 			if !hasEntPos || !hasEntHealth {
 				continue
@@ -307,7 +354,10 @@ func (g *Game) ProcessPlayerUseItem(itemIndex int) {
 			entPos := entPosComp.(*components.PositionComponent)
 
 			// Get player position
-			playerPosComp, hasPlayerPos := g.world.ComponentManager.GetComponent(player, components.Position)
+			playerPosComp, hasPlayerPos := g.world.ComponentManager.GetComponent(
+				player,
+				components.Position,
+			)
 			if !hasPlayerPos {
 				continue
 			}
@@ -342,139 +392,6 @@ func (g *Game) ProcessPlayerUseItem(itemIndex int) {
 	}
 }
 
-func (g *Game) Render() string {
-	// Create a grid with default "empty" characters
-	tiles := make([][]string, g.height)
-	for y := range g.height {
-		tiles[y] = make([]string, g.width)
-		for x := range g.width {
-			tiles[y][x] = emptyChar
-		}
-	}
-
-	// Get all entities with position and sprite
-	entities := g.world.EntityManager.GetAllEntities()
-
-	// Place entities on the grid
-	for _, entity := range entities {
-		posComp, hasPos := g.world.ComponentManager.GetComponent(entity, components.Position)
-		spriteComp, hasSprite := g.world.ComponentManager.GetComponent(entity, components.Sprite)
-
-		if !hasPos || !hasSprite {
-			continue
-		}
-
-		pos := posComp.(*components.PositionComponent)
-		sprite := spriteComp.(*components.SpriteComponent)
-
-		// Make sure position is within bounds
-		if pos.X >= 0 && pos.X < g.width && pos.Y >= 0 && pos.Y < g.height {
-			tiles[pos.Y][pos.X] = string(sprite.Char)
-		}
-	}
-
-	// Build the game board string
-	board := titleStyle.Render(" Roguelike ECS Game ") + "\n\n"
-
-	// Add border to the top
-	board += "┌"
-	for range g.width {
-		board += "─"
-	}
-	board += "┐\n"
-
-	// Add game tiles with border
-	for y := range g.height {
-		board += "│"
-		for x := range g.width {
-			board += tiles[y][x]
-		}
-		board += "│\n"
-	}
-
-	// Add border to the bottom
-	board += "└"
-	for range g.width {
-		board += "─"
-	}
-	board += "┘\n\n"
-
-	// Add status message
-	board += infoStyle.Render(" Status: "+g.statusMessage) + "\n\n"
-
-	// Display entity health status
-	board += healthStyle.Render(" Health ") + "\n"
-
-	// Get a sorted list of entities
-	sortedEntities := make([]ecs.Entity, len(entities))
-	copy(sortedEntities, entities)
-	slices.Sort(sortedEntities)
-
-	for _, entity := range sortedEntities {
-		healthComp, hasHealth := g.world.ComponentManager.GetComponent(entity, components.Health)
-		if hasHealth {
-			health := healthComp.(*components.HealthComponent)
-
-			var entityType string
-			if g.world.ComponentManager.HasComponent(entity, components.PlayerControlled) {
-				entityType = "Player"
-			} else {
-				spriteComp, hasSprite := g.world.ComponentManager.GetComponent(entity, components.Sprite)
-				if hasSprite {
-					sprite := spriteComp.(*components.SpriteComponent)
-					entityType = fmt.Sprintf("%c", sprite.Char)
-				} else {
-					entityType = fmt.Sprintf("Enemy %d", entity)
-				}
-			}
-
-			board += fmt.Sprintf("%s: HP %d/%d\n", entityType, health.HP, health.MaxHP)
-		}
-	}
-
-	// Display inventory for player
-	player := g.GetPlayerEntity()
-	if player != -1 {
-		if inventoryComp, hasInventory := g.world.ComponentManager.GetComponent(player, components.Inventory); hasInventory {
-			inventory := inventoryComp.(*components.InventoryComponent)
-
-			board += "\n" + inventoryStyle.Render(" Inventory ") + "\n"
-
-			if len(inventory.Items) == 0 {
-				board += "Empty\n"
-			} else {
-				for i, itemEnt := range inventory.Items {
-					if !g.world.EntityManager.HasEntity(itemEnt) {
-						continue
-					}
-
-					itemComp, hasItem := g.world.ComponentManager.GetComponent(itemEnt, components.Item)
-					if !hasItem {
-						continue
-					}
-
-					item := itemComp.(*components.ItemComponent)
-					board += fmt.Sprintf("%d) %s [%d gp] [%d lb]\n", i+1, item.Name, item.Value, item.Weight)
-				}
-			}
-		}
-	}
-
-	// Add help
-	board += "\n" + infoStyle.Render(" Controls ") + "\n"
-	board += "Arrow keys: Move/Attack\n"
-	board += "Space: Pick up item\n"
-	board += "1-9: Use inventory item\n"
-	board += "Q: Quit game\n"
-
-	if g.gameOver {
-		board += "\n" + healthStyle.Render(" GAME OVER ") + "\n"
-		board += "Press Q to quit\n"
-	}
-
-	return board
-}
-
 // ProcessAITurn processes AI turns for all AI-controlled entities
 // Returns true if all AI turns have been processed
 func (g *Game) ProcessAITurn() bool {
@@ -504,14 +421,41 @@ func (g *Game) RunPlayerTurn() {
 	g.turnManager.NextTurn()
 }
 
-func (g *Game) Run() {
-	fmt.Println("Starting roguelike game...")
-	g.Initialize()
+// runAITurns handles all AI entity turns until it's the player's turn again
+func (g *Game) RunAITurns() {
+	// Keep processing AI turns until it's the player's turn again or game over
+	for {
+		// Get current entity
+		currentEntity := g.turnManager.GetCurrentEntity()
+		if currentEntity == -1 {
+			g.gameOver = true
+			g.statusMessage = "Game Over! No entities left!"
+			return
+		}
 
-	// Create and run the Bubbletea program
-	p := NewTeaModel(g)
-	if _, err := p.Run(); err != nil {
-		fmt.Printf("Error running program: %v\n", err)
-		os.Exit(1)
+		// If it's the player's turn, we're done processing AI turns
+		if g.world.ComponentManager.HasComponent(currentEntity, components.PlayerControlled) {
+			return
+		}
+
+		// Process AI for this entity
+		g.aiSystem.CurrentEntity = currentEntity
+		g.aiSystem.Update(g.world)
+
+		// Update ECS world (runs all systems)
+		g.world.Update()
+
+		// Check if player was defeated during this AI turn
+		playerEntities := g.world.ComponentManager.GetAllEntitiesWithComponent(
+			components.PlayerControlled,
+		)
+		if len(playerEntities) == 0 {
+			g.gameOver = true
+			g.statusMessage = "Game Over! You were defeated!"
+			return
+		}
+
+		// Next turn
+		g.turnManager.NextTurn()
 	}
 }
