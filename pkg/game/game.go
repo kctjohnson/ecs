@@ -8,6 +8,7 @@ import (
 	"ecs/pkg/ecs/components"
 	"ecs/pkg/ecs/events"
 	"ecs/pkg/ecs/systems"
+	"ecs/pkg/mathutils"
 	"ecs/pkg/turnmanager"
 	"slices"
 )
@@ -81,6 +82,12 @@ func (g *Game) Initialize() {
 			if itemComp, hasItem := g.world.ComponentManager.GetComponent(itemID, components.Item); hasItem {
 				item := itemComp.(*components.ItemComponent)
 				g.statusMessage = fmt.Sprintf("Used %s", item.Name)
+				if target, ok := event.Data["target"].(ecs.Entity); ok {
+					if healthComp, hasHealth := g.world.ComponentManager.GetComponent(target, components.Health); hasHealth {
+						health := healthComp.(*components.HealthComponent)
+						g.statusMessage += fmt.Sprintf(" on %d (HP %d/%d)", target, health.HP, health.MaxHP)
+					}
+				}
 			}
 		}
 	})
@@ -113,13 +120,17 @@ func (g *Game) Initialize() {
 		Name:   "Red Potion",
 		Weight: 1, Value: 37,
 		Sprite: 'o',
+		Effect: components.HealEffect,
+		Power:  0,
 	})
 
 	g.entityService.CreateItem(ItemParams{
-		X: 15, Y: 8,
-		Name:   "Blue Potion",
-		Weight: 1, Value: 45,
-		Sprite: 'o',
+		X: 4, Y: 7,
+		Name:   "Scroll of Fireball",
+		Weight: 1, Value: 237,
+		Sprite: '~',
+		Effect: components.DamageEffect,
+		Power:  20,
 	})
 }
 
@@ -252,15 +263,81 @@ func (g *Game) ProcessPlayerUseItem(itemIndex int) {
 		return
 	}
 
-	g.world.ComponentManager.AddComponent(
-		player,
-		components.UseItemIntent,
-		&components.UseItemIntentComponent{
-			ItemEntity: inventory.Items[itemIndex],
-			Consumer:   player,
-			Target:     player,
-		},
-	)
+	// Make sure item is usable
+	usableComp, hasUsable := g.world.ComponentManager.GetComponent(inventory.Items[itemIndex], components.Usable)
+	if !hasUsable {
+		g.statusMessage = "Item is not usable"
+		return
+	}
+	usable := usableComp.(*components.UsableComponent)
+
+	// Determine the use intent based on the usable effect
+	switch usable.Effect {
+	case components.HealEffect:
+		g.world.ComponentManager.AddComponent(
+			player,
+			components.UseItemIntent,
+			&components.UseItemIntentComponent{
+				ItemEntity: inventory.Items[itemIndex],
+				Consumer:   player,
+				Target:     player,
+			},
+		)
+	case components.DamageEffect:
+		// Get the entity closest to the player that is not the player
+		entities := g.world.EntityManager.GetAllEntities()
+
+		// Find the closest entity to the player
+		var minDist int
+		var targetEntity ecs.Entity = -1
+		for _, entity := range entities {
+			// Skip player and invalid entities
+			if entity == player || !g.world.EntityManager.HasEntity(entity) {
+				continue
+			}
+
+			// Check if entity has position and health components
+			entPosComp, hasEntPos := g.world.ComponentManager.GetComponent(entity, components.Position)
+			_, hasEntHealth := g.world.ComponentManager.GetComponent(entity, components.Health)
+			if !hasEntPos || !hasEntHealth {
+				continue
+			}
+			entPos := entPosComp.(*components.PositionComponent)
+
+			// Get player position
+			playerPosComp, hasPlayerPos := g.world.ComponentManager.GetComponent(player, components.Position)
+			if !hasPlayerPos {
+				continue
+			}
+			playerPos := playerPosComp.(*components.PositionComponent)
+
+			// Calculate distance
+			dist := mathutils.Abs(entPos.X-playerPos.X) + mathutils.Abs(entPos.Y-playerPos.Y)
+
+			// Update target entity if closer
+			if targetEntity == -1 || dist < minDist {
+				targetEntity = entity
+				minDist = dist
+			}
+		}
+
+		if targetEntity == -1 {
+			g.statusMessage = "No valid target found"
+			return
+		}
+
+		// Add use item intent
+		g.world.ComponentManager.AddComponent(
+			player,
+			components.UseItemIntent,
+			&components.UseItemIntentComponent{
+				ItemEntity: inventory.Items[itemIndex],
+				Consumer:   player,
+				Target:     targetEntity,
+			},
+		)
+	case components.RepairEffect:
+	}
 }
 
 func (g *Game) Render() string {

@@ -50,6 +50,7 @@ func (cs *CombatSystem) Update(world *ecs.World) {
 		// Check if target is defeated
 		if health.HP <= 0 {
 			world.QueueEvent(events.EntityDefeated, target, nil)
+			world.RemoveEntity(target)
 		}
 
 		// Remove the intent after processing

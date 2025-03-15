@@ -90,7 +90,7 @@ func (us *UsableSystem) Update(world *ecs.World) {
 				}
 
 				health.HP -= usable.Power
-				if health.HP < 0 {
+				if health.HP <= 0 {
 					health.HP = 0
 					world.QueueEvent(events.EntityDefeated, useIntent.Target, nil)
 				}
@@ -100,7 +100,8 @@ func (us *UsableSystem) Update(world *ecs.World) {
 
 				// Queue event
 				world.QueueEvent(events.ItemUsed, entity, map[string]any{
-					"item": useIntent.ItemEntity,
+					"item":   useIntent.ItemEntity,
+					"target": useIntent.Target,
 				})
 			}
 		case components.RepairEffect:

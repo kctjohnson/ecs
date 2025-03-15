@@ -96,6 +96,8 @@ type ItemParams struct {
 	Weight int
 	Value  int
 	Sprite rune
+	Effect components.UsableEffect
+	Power  int
 }
 
 func (es *EntityService) CreateItem(itemParams ItemParams) ecs.Entity {
@@ -123,8 +125,8 @@ func (es *EntityService) CreateItem(itemParams ItemParams) ecs.Entity {
 		item,
 		components.Usable,
 		&components.UsableComponent{
-			Effect: components.HealEffect,
-			Power:  20,
+			Effect: itemParams.Effect,
+			Power:  itemParams.Power,
 		},
 	)
 

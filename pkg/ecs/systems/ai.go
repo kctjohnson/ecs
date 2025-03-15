@@ -3,6 +3,7 @@ package systems
 import (
 	"ecs/pkg/ecs"
 	"ecs/pkg/ecs/components"
+	"ecs/pkg/mathutils"
 )
 
 type AISystem struct {
@@ -62,8 +63,7 @@ func (ai *AISystem) isAdjacent(world *ecs.World, e1, e2 ecs.Entity) bool {
 	pos1 := pos1Comp.(*components.PositionComponent)
 	pos2 := pos2Comp.(*components.PositionComponent)
 
-	return (abs(pos1.X-pos2.X) == 1 && pos1.Y == pos2.Y) ||
-		(abs(pos1.Y-pos2.Y) == 1 && pos1.X == pos2.X)
+	return mathutils.Adjacent(pos1.X, pos1.Y, pos2.X, pos2.Y)
 }
 
 func (ai *AISystem) moveToward(world *ecs.World, entity, target ecs.Entity) {
@@ -91,11 +91,4 @@ func (ai *AISystem) moveToward(world *ecs.World, entity, target ecs.Entity) {
 		components.MoveIntent,
 		&components.MoveIntentComponent{DX: dx, DY: dy},
 	)
-}
-
-func abs(n int) int {
-	if n < 0 {
-		return -n
-	}
-	return n
 }
