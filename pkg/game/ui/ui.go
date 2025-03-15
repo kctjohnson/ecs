@@ -43,7 +43,7 @@ func RunGame(g *game.Game) {
 	g.Initialize()
 
 	p := tea.NewProgram(
-		NewGameModel(g),
+		NewMainModel(g),
 		tea.WithAltScreen(),
 	)
 
