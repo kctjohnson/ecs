@@ -40,16 +40,6 @@ func (w *World) Update() {
 // Simple event system for communication between ECS and external systems
 type EventType string
 
-const (
-	EntityMoved    EventType = "entity_moved"
-	EntityAttacked EventType = "entity_attacked"
-	EntityDefeated EventType = "entity_defeated"
-	HealthChanged  EventType = "health_changed"
-	TurnEnded      EventType = "turn_ended"
-	ItemPickedUp   EventType = "item_picked_up"
-	ItemUsed       EventType = "item_used"
-)
-
 type Event struct {
 	Type   EventType
 	Entity Entity

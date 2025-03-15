@@ -3,6 +3,7 @@ package systems
 import (
 	"ecs/pkg/ecs"
 	"ecs/pkg/ecs/components"
+	"ecs/pkg/ecs/events"
 )
 
 type InventorySystem struct{}
@@ -58,7 +59,7 @@ func (is *InventorySystem) Update(world *ecs.World) {
 				world.ComponentManager.RemoveComponent(itemEntity, components.Position)
 
 				// Queue inventory_changed event
-				world.QueueEvent(ecs.ItemPickedUp, entity, map[string]any{
+				world.QueueEvent(events.ItemPickedUp, entity, map[string]any{
 					"item": itemEntity,
 				})
 			}

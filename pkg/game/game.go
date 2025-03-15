@@ -6,6 +6,7 @@ import (
 
 	"ecs/pkg/ecs"
 	"ecs/pkg/ecs/components"
+	"ecs/pkg/ecs/events"
 	"ecs/pkg/ecs/systems"
 	"ecs/pkg/turnmanager"
 	"slices"
@@ -52,7 +53,7 @@ func (g *Game) Initialize() {
 	g.registerComponentTypes()
 
 	// Register event handlers
-	g.world.RegisterEventHandler(ecs.EntityDefeated, func(event ecs.Event) {
+	g.world.RegisterEventHandler(events.EntityDefeated, func(event ecs.Event) {
 		g.turnManager.RemoveEntity(event.Entity)
 
 		// Check if player was defeated
@@ -64,7 +65,7 @@ func (g *Game) Initialize() {
 		}
 	})
 
-	g.world.RegisterEventHandler(ecs.ItemPickedUp, func(event ecs.Event) {
+	g.world.RegisterEventHandler(events.ItemPickedUp, func(event ecs.Event) {
 		itemID, ok := event.Data["item"].(ecs.Entity)
 		if ok {
 			if itemComp, hasItem := g.world.ComponentManager.GetComponent(itemID, components.Item); hasItem {
@@ -74,7 +75,7 @@ func (g *Game) Initialize() {
 		}
 	})
 
-	g.world.RegisterEventHandler(ecs.ItemUsed, func(event ecs.Event) {
+	g.world.RegisterEventHandler(events.ItemUsed, func(event ecs.Event) {
 		itemID, ok := event.Data["item"].(ecs.Entity)
 		if ok {
 			if itemComp, hasItem := g.world.ComponentManager.GetComponent(itemID, components.Item); hasItem {

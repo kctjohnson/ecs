@@ -3,6 +3,7 @@ package systems
 import (
 	"ecs/pkg/ecs"
 	"ecs/pkg/ecs/components"
+	"ecs/pkg/ecs/events"
 )
 
 type CombatSystem struct{}
@@ -41,14 +42,14 @@ func (cs *CombatSystem) Update(world *ecs.World) {
 		health.HP -= damage
 
 		// Queue an attack event
-		world.QueueEvent("entity_attacked", entity, map[string]any{
+		world.QueueEvent(events.EntityAttacked, entity, map[string]any{
 			"target": target,
 			"damage": damage,
 		})
 
 		// Check if target is defeated
 		if health.HP <= 0 {
-			world.QueueEvent("entity_defeated", target, nil)
+			world.QueueEvent(events.EntityDefeated, target, nil)
 		}
 
 		// Remove the intent after processing

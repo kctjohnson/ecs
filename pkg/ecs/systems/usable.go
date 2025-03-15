@@ -5,6 +5,7 @@ import (
 
 	"ecs/pkg/ecs"
 	"ecs/pkg/ecs/components"
+	"ecs/pkg/ecs/events"
 )
 
 type UsableSystem struct{}
@@ -64,13 +65,44 @@ func (us *UsableSystem) Update(world *ecs.World) {
 				world.ComponentManager.RemoveComponent(useIntent.ItemEntity, components.Usable)
 
 				// Queue event
-				world.QueueEvent(ecs.ItemUsed, entity, map[string]any{
+				world.QueueEvent(events.ItemUsed, entity, map[string]any{
 					"item":   useIntent.ItemEntity,
 					"target": useIntent.Target,
 				})
 
 			}
 		case components.DamageEffect:
+			if healthComp, hasHealthComp := world.ComponentManager.GetComponent(useIntent.Target, components.Health); hasHealthComp {
+				health := healthComp.(*components.HealthComponent)
+
+				// Remove the item from the inventory
+				inventoryComp, _ := world.ComponentManager.GetComponent(
+					useIntent.Consumer,
+					components.Inventory,
+				)
+				inventory := inventoryComp.(*components.InventoryComponent)
+
+				for i, item := range inventory.Items {
+					if item == useIntent.ItemEntity {
+						inventory.Items = slices.Delete(inventory.Items, i, i+1)
+						break
+					}
+				}
+
+				health.HP -= usable.Power
+				if health.HP < 0 {
+					health.HP = 0
+					world.QueueEvent(events.EntityDefeated, useIntent.Target, nil)
+				}
+
+				// Remove the usable component from the item
+				world.ComponentManager.RemoveComponent(useIntent.ItemEntity, components.Usable)
+
+				// Queue event
+				world.QueueEvent(events.ItemUsed, entity, map[string]any{
+					"item": useIntent.ItemEntity,
+				})
+			}
 		case components.RepairEffect:
 		}
 

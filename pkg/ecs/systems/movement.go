@@ -3,6 +3,7 @@ package systems
 import (
 	"ecs/pkg/ecs"
 	"ecs/pkg/ecs/components"
+	"ecs/pkg/ecs/events"
 )
 
 type MovementSystem struct{}
@@ -38,7 +39,7 @@ func (ms *MovementSystem) Update(world *ecs.World) {
 		world.ComponentManager.RemoveComponent(entity, components.MoveIntent)
 
 		// QUeue a movement event for other systems (like renderer)
-		world.QueueEvent("entity_moved", entity, map[string]any{
+		world.QueueEvent(events.EntityMoved, entity, map[string]any{
 			"old_x": pos.X - moveIntent.DX,
 			"old_y": pos.Y - moveIntent.DY,
 			"new_x": pos.X,
