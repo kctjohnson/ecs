@@ -2,10 +2,10 @@ package main
 
 import (
 	"ecs/pkg/game"
-	"ecs/pkg/game/model"
+	"ecs/pkg/game/ui"
 )
 
 func main() {
 	game := game.NewGame()
-	model.RunGame(game)
+	ui.RunGame(game)
 }
