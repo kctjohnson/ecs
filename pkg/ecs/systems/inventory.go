@@ -1,14 +1,14 @@
 package systems
 
 import (
-	"fmt"
-
 	"ecs/pkg/ecs"
 	"ecs/pkg/ecs/components"
 )
 
 type InventorySystem struct{}
 
+// The Inventory System is responsible for handling pickup intents
+// It consumes pickup intents and adds items to the entity's inventory (if valid)
 func (is *InventorySystem) Update(world *ecs.World) {
 	// Process all entities with PickupIntentComponent
 	entitiesWithPickupIntent := world.ComponentManager.GetAllEntitiesWithComponent(
@@ -56,8 +56,6 @@ func (is *InventorySystem) Update(world *ecs.World) {
 
 				// Remove item from world position
 				world.ComponentManager.RemoveComponent(itemEntity, components.Position)
-
-				fmt.Printf("Entity %d picked up item %d\n", entity, itemEntity)
 
 				// Queue inventory_changed event
 				world.QueueEvent(ecs.ItemPickedUp, entity, map[string]any{

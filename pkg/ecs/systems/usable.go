@@ -1,13 +1,17 @@
 package systems
 
 import (
+	"slices"
+
 	"ecs/pkg/ecs"
 	"ecs/pkg/ecs/components"
 )
 
-type UsableSystem struct {
-}
+type UsableSystem struct{}
 
+// The Usable System is responsible for handling use item intents
+// It consumes use item intents and applies the item's effect to the target entity
+// It also removes the item from the inventory and the usable component from the item
 func (us *UsableSystem) Update(world *ecs.World) {
 	// Process all entities with use item intent
 	entitiesWithUseItemIntent := world.ComponentManager.GetAllEntitiesWithComponent(
@@ -46,7 +50,7 @@ func (us *UsableSystem) Update(world *ecs.World) {
 
 				for i, item := range inventory.Items {
 					if item == useIntent.ItemEntity {
-						inventory.Items = append(inventory.Items[:i], inventory.Items[i+1:]...)
+						inventory.Items = slices.Delete(inventory.Items, i, i+1)
 						break
 					}
 				}

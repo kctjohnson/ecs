@@ -1,14 +1,14 @@
 package systems
 
 import (
-	"fmt"
-
 	"ecs/pkg/ecs"
 	"ecs/pkg/ecs/components"
 )
 
 type CombatSystem struct{}
 
+// The Combat System is responsible for handling combat between entities
+// It consumes attack intents and applies damage to the target entity (if valid)
 func (cs *CombatSystem) Update(world *ecs.World) {
 	// Get all entities with attack intent
 	entitiesWithAttackIntent := world.ComponentManager.GetAllEntitiesWithComponent(
@@ -41,18 +41,14 @@ func (cs *CombatSystem) Update(world *ecs.World) {
 		health.HP -= damage
 
 		// Queue an attack event
-		world.QueueEvent("entity_attacked", entity, map[string]interface{}{
+		world.QueueEvent("entity_attacked", entity, map[string]any{
 			"target": target,
 			"damage": damage,
 		})
 
-		fmt.Printf("Entity %d attacked Entity %d for %d damage\n", entity, target, damage)
-
 		// Check if target is defeated
 		if health.HP <= 0 {
-			fmt.Printf("Entity %d has been defeated\n", target)
 			world.QueueEvent("entity_defeated", target, nil)
-			world.RemoveEntity(target)
 		}
 
 		// Remove the intent after processing

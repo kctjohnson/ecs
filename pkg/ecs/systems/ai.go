@@ -9,6 +9,9 @@ type AISystem struct {
 	CurrentEntity ecs.Entity
 }
 
+// Currently the AI system is very simple, and has two behaviors
+// 1. If the AI entity is adjacent to a player-controlled entity, it will attack
+// 2. If the AI entity is not adjacent to a player-controlled entity, it will move toward the player
 func (ai *AISystem) Update(world *ecs.World) {
 	if !world.EntityManager.HasEntity(ai.CurrentEntity) {
 		return

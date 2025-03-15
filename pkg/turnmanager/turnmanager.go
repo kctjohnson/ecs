@@ -1,6 +1,10 @@
 package turnmanager
 
-import "ecs/pkg/ecs"
+import (
+	"slices"
+
+	"ecs/pkg/ecs"
+)
 
 type TurnManager struct {
 	world     *ecs.World
@@ -23,7 +27,7 @@ func (tm *TurnManager) AddEntity(entity ecs.Entity) {
 func (tm *TurnManager) RemoveEntity(entity ecs.Entity) {
 	for i, e := range tm.turnOrder {
 		if e == entity {
-			tm.turnOrder = append(tm.turnOrder[:i], tm.turnOrder[i+1:]...)
+			tm.turnOrder = slices.Delete(tm.turnOrder, i, i+1)
 			if tm.current >= i && tm.current > 0 {
 				tm.current--
 			}

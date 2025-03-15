@@ -148,6 +148,9 @@ func (g *Game) GetPlayerEntity() ecs.Entity {
 	return -1
 }
 
+// ProcessPlayerMove processes player movement input
+// Adds a MoveIntent component to the player entity if valid move
+// Adds an AttackIntent component if an enemy is at the target position
 func (g *Game) ProcessPlayerMove(dx, dy int) {
 	player := g.GetPlayerEntity()
 	if player == -1 {
@@ -204,6 +207,8 @@ func (g *Game) ProcessPlayerMove(dx, dy int) {
 	)
 }
 
+// ProcessPlayerPickup processes player pickup input
+// Adds a PickupIntent component to the player entity
 func (g *Game) ProcessPlayerPickup() {
 	player := g.GetPlayerEntity()
 	if player == -1 {
@@ -217,6 +222,8 @@ func (g *Game) ProcessPlayerPickup() {
 	)
 }
 
+// ProcessPlayerUseItem processes player use item input
+// Adds a UseItemIntent component to the player entity
 func (g *Game) ProcessPlayerUseItem(itemIndex int) {
 	player := g.GetPlayerEntity()
 	if player == -1 {
@@ -268,6 +275,7 @@ func (g *Game) Render() string {
 	// Get all entities with position and sprite
 	entities := g.world.EntityManager.GetAllEntities()
 
+	// Place entities on the grid
 	for _, entity := range entities {
 		posComp, hasPos := g.world.ComponentManager.GetComponent(entity, components.Position)
 		spriteComp, hasSprite := g.world.ComponentManager.GetComponent(entity, components.Sprite)
@@ -381,6 +389,8 @@ func (g *Game) Render() string {
 	return board
 }
 
+// ProcessAITurn processes AI turns for all AI-controlled entities
+// Returns true if all AI turns have been processed
 func (g *Game) ProcessAITurn() bool {
 	// Get current entity
 	currentEntity := g.turnManager.GetCurrentEntity()

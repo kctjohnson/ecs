@@ -7,6 +7,8 @@ import (
 
 type MovementSystem struct{}
 
+// The Movement System is responsible for handling movement intents
+// It consumes move intents and updates the entity's position
 func (ms *MovementSystem) Update(world *ecs.World) {
 	// Get all entities with movement intent
 	entitiesWithMoveIntent := world.ComponentManager.GetAllEntitiesWithComponent(

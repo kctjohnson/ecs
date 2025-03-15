@@ -1,7 +1,5 @@
 package ecs
 
-import "fmt"
-
 // World is the main ECS container that holds all entities, components, and systems
 type World struct {
 	EntityManager    *EntityManager
@@ -74,7 +72,6 @@ func (w *World) processEvents() {
 	// Process all events in the queue
 	for _, event := range w.eventQueue {
 		if handlers, exists := w.eventHandlers[event.Type]; exists {
-			fmt.Printf("Processing event: %s for entity %d\n", event.Type, event.Entity)
 			for _, handler := range handlers {
 				handler(event)
 			}

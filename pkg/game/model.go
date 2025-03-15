@@ -151,6 +151,7 @@ func (m TeaModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "up", "k":
 				m.game.ProcessPlayerMove(0, -1)
 				m.game.RunPlayerTurn()
+				m.processingAI = true
 				newModel := m
 				newModel.processingAI = true
 				return newModel, m.processAITurns()

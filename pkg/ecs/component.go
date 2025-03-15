@@ -1,7 +1,7 @@
 package ecs
 
 // Component is a marker interface for all component types
-type Component interface{}
+type Component any
 
 type ComponentType string
 
