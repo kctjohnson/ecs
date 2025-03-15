@@ -2,7 +2,7 @@ package systems
 
 import (
 	"ecs/pkg/ecs"
-	"ecs/pkg/ecs/components"
+	"ecs/pkg/game/components"
 	"ecs/pkg/mathutils"
 )
 

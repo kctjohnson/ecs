@@ -6,7 +6,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"ecs/pkg/ecs/components"
+	"ecs/pkg/game/components"
 )
 
 var (

@@ -19,91 +19,111 @@ const (
 	UseItemIntent    ecs.ComponentType = "use_item_intent"
 )
 
+type EquipmentSlot string
+
+const (
+	Head      EquipmentSlot = "head"
+	Torso     EquipmentSlot = "torso"
+	Legs      EquipmentSlot = "legs"
+	Feet      EquipmentSlot = "feet"
+	LeftHand  EquipmentSlot = "left_hand"
+	RightHand EquipmentSlot = "right_hand"
+)
+
+type ComponentType struct{}
+
+func (c ComponentType) IsComponent() {}
+
 // PositionComponent stores entity location
 type PositionComponent struct {
+	ComponentType
 	X, Y int
 }
 
-func (p PositionComponent) IsComponent() {} // Marker method for the Component interface
-
 // HealthComponent stores entity health
 type HealthComponent struct {
+	ComponentType
 	HP    int
 	MaxHP int
 }
 
-func (h HealthComponent) IsComponent() {}
-
 // StrengthComponent stores entity strength (damage)
 type StrengthComponent struct {
+	ComponentType
 	Strength int
 }
 
-func (s StrengthComponent) IsComponent() {}
-
 // SpriteComponent stores visual representation
 type SpriteComponent struct {
+	ComponentType
 	Char rune
 }
 
-func (s SpriteComponent) IsComponent() {}
-
 // PlayerControlledComponent marks an entity as player-controlled
-type PlayerControlledComponent struct{}
-
-func (p PlayerControlledComponent) IsComponent() {}
+type PlayerControlledComponent struct {
+	ComponentType
+}
 
 type InventoryComponent struct {
+	ComponentType
 	Items       []ecs.Entity
 	MaxCapacity int
 }
 
-func (i InventoryComponent) IsComponent() {}
-
 type ItemComponent struct {
+	ComponentType
 	Name   string
 	Weight int
 	Value  int
 }
 
-func (i ItemComponent) IsComponent() {}
-
 type EquippableComponent struct {
-	Slot string // "head", "torso", "legs", "hands", "feet"
+	ComponentType
+	Slots []EquipmentSlot // Equipment slots this item can be equipped to
 }
 
-func (i EquippableComponent) IsComponent() {}
-
 type UsableComponent struct {
+	ComponentType
 	Effect UsableEffect
 	Power  int
 }
 
-func (u UsableComponent) IsComponent() {}
-
 // MoveIntentComponent represents intention to move
 type MoveIntentComponent struct {
+	ComponentType
 	DX, DY int
 }
 
-func (m MoveIntentComponent) IsComponent() {}
-
 // AttackIntentComponent represents intention to attack
 type AttackIntentComponent struct {
+	ComponentType
 	Target ecs.Entity
 	Damage int
 }
 
-func (a AttackIntentComponent) IsComponent() {}
-
-type PickupIntentComponent struct{}
-
-func (p PickupIntentComponent) IsComponent() {}
+type PickupIntentComponent struct {
+	ComponentType
+}
 
 type UseItemIntentComponent struct {
+	ComponentType
 	ItemEntity ecs.Entity
 	Consumer   ecs.Entity
 	Target     ecs.Entity
 }
 
-func (u UseItemIntentComponent) IsComponent() {}
+var ComponentTypes = []ecs.ComponentType{
+	Position,
+	Health,
+	Strength,
+	Sprite,
+	Inventory,
+	Item,
+	Equippable,
+	Usable,
+	PlayerControlled,
+	MoveIntent,
+	AttackIntent,
+	PickupIntent,
+	UseItemIntent,
+}

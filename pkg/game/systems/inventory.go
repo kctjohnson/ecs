@@ -2,8 +2,8 @@ package systems
 
 import (
 	"ecs/pkg/ecs"
-	"ecs/pkg/ecs/components"
-	"ecs/pkg/ecs/events"
+	"ecs/pkg/game/components"
+	"ecs/pkg/game/events"
 )
 
 type InventorySystem struct{}

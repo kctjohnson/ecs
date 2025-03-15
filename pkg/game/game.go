@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"ecs/pkg/ecs"
-	"ecs/pkg/ecs/components"
-	"ecs/pkg/ecs/events"
-	"ecs/pkg/ecs/systems"
+	"ecs/pkg/game/components"
+	"ecs/pkg/game/events"
+	"ecs/pkg/game/systems"
 	"ecs/pkg/mathutils"
 	"ecs/pkg/turnmanager"
 	"slices"
@@ -139,19 +139,9 @@ func (g *Game) Initialize() {
 
 func (g *Game) registerComponentTypes() {
 	// Register all component types with the component manager
-	g.world.ComponentManager.RegisterComponentType(components.Position)
-	g.world.ComponentManager.RegisterComponentType(components.Health)
-	g.world.ComponentManager.RegisterComponentType(components.Strength)
-	g.world.ComponentManager.RegisterComponentType(components.Sprite)
-	g.world.ComponentManager.RegisterComponentType(components.Inventory)
-	g.world.ComponentManager.RegisterComponentType(components.Item)
-	g.world.ComponentManager.RegisterComponentType(components.Equippable)
-	g.world.ComponentManager.RegisterComponentType(components.Usable)
-	g.world.ComponentManager.RegisterComponentType(components.PlayerControlled)
-	g.world.ComponentManager.RegisterComponentType(components.MoveIntent)
-	g.world.ComponentManager.RegisterComponentType(components.AttackIntent)
-	g.world.ComponentManager.RegisterComponentType(components.PickupIntent)
-	g.world.ComponentManager.RegisterComponentType(components.UseItemIntent)
+	for _, componentType := range components.ComponentTypes {
+		g.world.ComponentManager.RegisterComponentType(componentType)
+	}
 }
 
 func (g *Game) GetPlayerEntity() ecs.Entity {
