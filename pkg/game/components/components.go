@@ -10,6 +10,8 @@ const (
 	Sprite           ecs.ComponentType = "sprite"
 	Inventory        ecs.ComponentType = "inventory"
 	Item             ecs.ComponentType = "item"
+	Weapon           ecs.ComponentType = "weapon"
+	Armor            ecs.ComponentType = "armor"
 	Equippable       ecs.ComponentType = "equippable"
 	Usable           ecs.ComponentType = "usable"
 	PlayerControlled ecs.ComponentType = "player_controlled"
@@ -17,6 +19,8 @@ const (
 	AttackIntent     ecs.ComponentType = "attack_intent"
 	PickupIntent     ecs.ComponentType = "pickup_intent"
 	UseItemIntent    ecs.ComponentType = "use_item_intent"
+	EquipIntent      ecs.ComponentType = "equip_intent"
+	UnequipIntent    ecs.ComponentType = "unequip_intent"
 )
 
 type EquipmentSlot string
@@ -109,7 +113,6 @@ type MoveIntentComponent struct {
 type AttackIntentComponent struct {
 	ComponentType
 	Target ecs.Entity
-	Damage int
 }
 
 type PickupIntentComponent struct {
@@ -123,6 +126,19 @@ type UseItemIntentComponent struct {
 	Target     ecs.Entity
 }
 
+type EquipIntentComponent struct {
+	ComponentType
+	ItemEntity ecs.Entity
+	Slot       EquipmentSlot
+	Target     ecs.Entity
+}
+
+type UnequipIntentComponent struct {
+	ComponentType
+	Slot   EquipmentSlot
+	Target ecs.Entity
+}
+
 var ComponentTypes = []ecs.ComponentType{
 	Position,
 	Health,
@@ -130,6 +146,8 @@ var ComponentTypes = []ecs.ComponentType{
 	Sprite,
 	Inventory,
 	Item,
+	Weapon,
+	Armor,
 	Equippable,
 	Usable,
 	PlayerControlled,
@@ -137,4 +155,6 @@ var ComponentTypes = []ecs.ComponentType{
 	AttackIntent,
 	PickupIntent,
 	UseItemIntent,
+	EquipIntent,
+	UnequipIntent,
 }

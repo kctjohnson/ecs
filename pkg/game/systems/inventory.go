@@ -6,10 +6,10 @@ import (
 	"ecs/pkg/game/events"
 )
 
-type InventorySystem struct{}
-
 // The Inventory System is responsible for handling pickup intents
 // It consumes pickup intents and adds items to the entity's inventory (if valid)
+type InventorySystem struct{}
+
 func (is *InventorySystem) Update(world *ecs.World) {
 	// Process all entities with PickupIntentComponent
 	entitiesWithPickupIntent := world.ComponentManager.GetAllEntitiesWithComponent(

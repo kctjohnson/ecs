@@ -34,6 +34,7 @@ func NewGame() *Game {
 	world.AddSystem(&systems.CombatSystem{})
 	world.AddSystem(&systems.InventorySystem{})
 	world.AddSystem(&systems.UsableSystem{})
+	world.AddSystem(&systems.EquipmentSystem{})
 
 	return &Game{
 		world:         world,
@@ -233,21 +234,10 @@ func (g *Game) ProcessPlayerMove(dx, dy int) {
 		// If entity is at target position, initiate combat
 		if entPos.X == targetX && entPos.Y == targetY {
 			if g.world.ComponentManager.HasComponent(entity, components.Health) {
-				// Get the strength of the player
-				damage := 10
-				strengthComp, hasStrength := g.world.ComponentManager.GetComponent(
-					player,
-					components.Strength,
-				)
-				if hasStrength {
-					strength := strengthComp.(*components.StrengthComponent)
-					damage = strength.Strength
-				}
-
 				g.world.ComponentManager.AddComponent(
 					player,
 					components.AttackIntent,
-					&components.AttackIntentComponent{Target: entity, Damage: damage},
+					&components.AttackIntentComponent{Target: entity},
 				)
 				return
 			}

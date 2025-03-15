@@ -186,10 +186,10 @@ func (m GameModel) View() string {
 		}
 	}
 
-	// Display inventory for player
 	player := g.GetPlayerEntity()
 	if player != -1 {
 		if inventoryComp, hasInventory := g.GetComponent(player, components.Inventory); hasInventory {
+			// Display inventory for player
 			inventory := inventoryComp.(*components.InventoryComponent)
 
 			board += "\n" + inventoryStyle.Render(" Inventory ") + "\n"
@@ -201,6 +201,20 @@ func (m GameModel) View() string {
 					if itemComp, hasItem := g.GetComponent(itemEnt, components.Item); hasItem {
 						item := itemComp.(*components.ItemComponent)
 						board += fmt.Sprintf("%d) %s [%d gp] [%d lb]\n", i+1, item.Name, item.Value, item.Weight)
+					}
+				}
+			}
+
+			// Display equipped items for player
+			board += "\n" + inventoryStyle.Render(" Equipment ") + "\n"
+
+			if len(inventory.Slots) == 0 {
+				board += "Empty\n"
+			} else {
+				for slot, itemEnt := range inventory.Slots {
+					if itemComp, hasItem := g.GetComponent(itemEnt, components.Item); hasItem {
+						item := itemComp.(*components.ItemComponent)
+						board += fmt.Sprintf("%s: %s\n", slot, item.Name)
 					}
 				}
 			}

@@ -10,6 +10,8 @@ const (
 	TurnEnded      ecs.EventType = "turn_ended"
 	ItemPickedUp   ecs.EventType = "item_picked_up"
 	ItemUsed       ecs.EventType = "item_used"
+	ItemEquipped   ecs.EventType = "item_equipped"
+	ItemUnequipped ecs.EventType = "item_unequipped"
 )
 
 // TODO: We need a way for events to be a bit more typed and have a consistent structure?

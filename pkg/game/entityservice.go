@@ -57,11 +57,45 @@ func (es *EntityService) CreatePlayer(playerParams PlayerParams) ecs.Entity {
 		components.PlayerControlled,
 		&components.PlayerControlledComponent{},
 	)
+
+	// Create a sword item
+	swordEnt := es.world.EntityManager.CreateEntity()
+	es.world.ComponentManager.AddComponent(
+		swordEnt,
+		components.Item,
+		&components.ItemComponent{
+			Name:   "Steel Sword",
+			Weight: 5,
+			Value:  84,
+		},
+	)
+	es.world.ComponentManager.AddComponent(
+		swordEnt,
+		components.Sprite,
+		&components.SpriteComponent{Char: '|'},
+	)
+	es.world.ComponentManager.AddComponent(
+		swordEnt,
+		components.Equippable,
+		&components.EquippableComponent{
+			Slots: []components.EquipmentSlot{components.RightHand, components.LeftHand},
+		},
+	)
+	es.world.ComponentManager.AddComponent(
+		swordEnt,
+		components.Weapon,
+		&components.WeaponComponent{Damage: 10},
+	)
+
+	// Add an inventory to the player
 	es.world.ComponentManager.AddComponent(
 		player,
 		components.Inventory,
 		&components.InventoryComponent{
-			Items:       []ecs.Entity{},
+			Items: []ecs.Entity{},
+			Slots: map[components.EquipmentSlot]ecs.Entity{
+				components.RightHand: swordEnt,
+			},
 			MaxCapacity: 30,
 		},
 	)
