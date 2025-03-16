@@ -1,31 +1,16 @@
-package game
+package entityservice
 
 import (
-	"log"
-
 	"ecs/internal/game/components"
 	"ecs/pkg/ecs"
 )
 
-type EntityService struct {
-	world  *ecs.World
-	logger *log.Logger
-}
-
-func NewEntityService(world *ecs.World, logger *log.Logger) *EntityService {
-	return &EntityService{
-		world:  world,
-		logger: logger,
-	}
-}
-
-type PlayerParams struct {
-	X, Y      int
+type CreatePlayerParams struct {
 	HP, MaxHP int
 	Strength  int
 }
 
-func (es *EntityService) CreatePlayer(playerParams PlayerParams) ecs.Entity {
+func (es *EntityService) CreatePlayer(playerParams CreatePlayerParams) ecs.Entity {
 	// There can only be one player entity
 	entsWithPlayer := es.world.ComponentManager.GetAllEntitiesWithComponent(
 		components.PlayerControlled,
@@ -36,11 +21,6 @@ func (es *EntityService) CreatePlayer(playerParams PlayerParams) ecs.Entity {
 	}
 
 	player := es.world.EntityManager.CreateEntity()
-	es.world.ComponentManager.AddComponent(
-		player,
-		components.Position,
-		&components.PositionComponent{X: playerParams.X, Y: playerParams.Y},
-	)
 	es.world.ComponentManager.AddComponent(
 		player,
 		components.Health,
@@ -68,9 +48,9 @@ func (es *EntityService) CreatePlayer(playerParams PlayerParams) ecs.Entity {
 		swordEnt,
 		components.Item,
 		&components.ItemComponent{
-			Name:   "Steel Sword",
+			Name:   "Rusty Sword",
 			Weight: 5,
-			Value:  84,
+			Value:  13,
 		},
 	)
 	es.world.ComponentManager.AddComponent(
@@ -88,7 +68,7 @@ func (es *EntityService) CreatePlayer(playerParams PlayerParams) ecs.Entity {
 	es.world.ComponentManager.AddComponent(
 		swordEnt,
 		components.Weapon,
-		&components.WeaponComponent{Damage: 10},
+		&components.WeaponComponent{Damage: 3},
 	)
 
 	// Add an inventory to the player
@@ -107,20 +87,14 @@ func (es *EntityService) CreatePlayer(playerParams PlayerParams) ecs.Entity {
 	return player
 }
 
-type EnemyParams struct {
-	X, Y      int
+type CreateEnemyParams struct {
 	HP, MaxHP int
 	Sprite    rune
 	Strength  int
 }
 
-func (es *EntityService) CreateEnemy(enemyParams EnemyParams) ecs.Entity {
+func (es *EntityService) CreateEnemy(enemyParams CreateEnemyParams) ecs.Entity {
 	enemy := es.world.EntityManager.CreateEntity()
-	es.world.ComponentManager.AddComponent(
-		enemy,
-		components.Position,
-		&components.PositionComponent{X: enemyParams.X, Y: enemyParams.Y},
-	)
 	es.world.ComponentManager.AddComponent(
 		enemy,
 		components.Health,
@@ -140,8 +114,7 @@ func (es *EntityService) CreateEnemy(enemyParams EnemyParams) ecs.Entity {
 	return enemy
 }
 
-type ItemParams struct {
-	X, Y   int
+type CreateItemParams struct {
 	Name   string
 	Weight int
 	Value  int
@@ -150,13 +123,8 @@ type ItemParams struct {
 	Power  int
 }
 
-func (es *EntityService) CreateItem(itemParams ItemParams) ecs.Entity {
+func (es *EntityService) CreateItem(itemParams CreateItemParams) ecs.Entity {
 	item := es.world.EntityManager.CreateEntity()
-	es.world.ComponentManager.AddComponent(
-		item,
-		components.Position,
-		&components.PositionComponent{X: itemParams.X, Y: itemParams.Y},
-	)
 	es.world.ComponentManager.AddComponent(
 		item,
 		components.Sprite,
@@ -183,8 +151,7 @@ func (es *EntityService) CreateItem(itemParams ItemParams) ecs.Entity {
 	return item
 }
 
-type WeaponParams struct {
-	X, Y   int
+type CreateWeaponParams struct {
 	Name   string
 	Weight int
 	Value  int
@@ -193,13 +160,8 @@ type WeaponParams struct {
 	Slots  []components.EquipmentSlot
 }
 
-func (es *EntityService) CreateWeapon(weaponParams WeaponParams) ecs.Entity {
+func (es *EntityService) CreateWeapon(weaponParams CreateWeaponParams) ecs.Entity {
 	weapon := es.world.EntityManager.CreateEntity()
-	es.world.ComponentManager.AddComponent(
-		weapon,
-		components.Position,
-		&components.PositionComponent{X: weaponParams.X, Y: weaponParams.Y},
-	)
 	es.world.ComponentManager.AddComponent(
 		weapon,
 		components.Sprite,
@@ -228,8 +190,7 @@ func (es *EntityService) CreateWeapon(weaponParams WeaponParams) ecs.Entity {
 	return weapon
 }
 
-type ArmorParams struct {
-	X, Y    int
+type CreateArmorParams struct {
 	Name    string
 	Weight  int
 	Value   int
@@ -238,13 +199,8 @@ type ArmorParams struct {
 	Slots   []components.EquipmentSlot
 }
 
-func (es *EntityService) CreateArmor(armorParams ArmorParams) ecs.Entity {
+func (es *EntityService) CreateArmor(armorParams CreateArmorParams) ecs.Entity {
 	armor := es.world.EntityManager.CreateEntity()
-	es.world.ComponentManager.AddComponent(
-		armor,
-		components.Position,
-		&components.PositionComponent{X: armorParams.X, Y: armorParams.Y},
-	)
 	es.world.ComponentManager.AddComponent(
 		armor,
 		components.Sprite,

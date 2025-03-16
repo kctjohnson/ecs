@@ -5,6 +5,7 @@ import (
 	"slices"
 
 	"ecs/internal/game/components"
+	"ecs/internal/game/entityservice"
 	"ecs/internal/game/events"
 	"ecs/internal/game/systems"
 	"ecs/internal/turnmanager"
@@ -17,7 +18,7 @@ type Game struct {
 	world         *ecs.World
 	turnManager   *turnmanager.TurnManager
 	aiSystem      *systems.AISystem
-	entityService *EntityService
+	entityService *entityservice.EntityService
 	width         int
 	height        int
 	gameOver      bool
@@ -43,7 +44,7 @@ func NewGame(logger *log.Logger) *Game {
 		world:         world,
 		turnManager:   turnmanager.NewTurnManager(world),
 		aiSystem:      aiSystem,
-		entityService: NewEntityService(world, logger),
+		entityService: entityservice.NewEntityService(world, logger),
 		width:         30,
 		height:        10,
 		gameOver:      false,
@@ -65,7 +66,7 @@ func (g *Game) Initialize() {
 	g.world.RegisterEventHandler(events.DebugStatusMessage, g.debugStatusEventHandler)
 
 	// Create player
-	player := g.entityService.CreatePlayer(PlayerParams{
+	player := g.entityService.SpawnPlayer(entityservice.SpawnPlayerParams{
 		X: 3, Y: 7,
 		HP: 100, MaxHP: 100,
 		Strength: 15,
@@ -73,7 +74,7 @@ func (g *Game) Initialize() {
 	g.turnManager.AddEntity(player)
 
 	// Create enemies
-	enemy := g.entityService.CreateEnemy(EnemyParams{
+	enemy := g.entityService.SpawnEnemy(entityservice.SpawnEnemyParams{
 		X: 15, Y: 9,
 		HP: 50, MaxHP: 50,
 		Strength: 10,
@@ -81,7 +82,7 @@ func (g *Game) Initialize() {
 	})
 	g.turnManager.AddEntity(enemy)
 
-	enemy2 := g.entityService.CreateEnemy(EnemyParams{
+	enemy2 := g.entityService.SpawnEnemy(entityservice.SpawnEnemyParams{
 		X: 19, Y: 8,
 		HP: 30, MaxHP: 30,
 		Strength: 7,
@@ -90,7 +91,7 @@ func (g *Game) Initialize() {
 	g.turnManager.AddEntity(enemy2)
 
 	// Create items
-	g.entityService.CreateItem(ItemParams{
+	g.entityService.SpawnItem(entityservice.SpawnItemParams{
 		X: 5, Y: 5,
 		Name:   "Red Potion",
 		Weight: 1, Value: 37,
@@ -99,7 +100,7 @@ func (g *Game) Initialize() {
 		Power:  20,
 	})
 
-	g.entityService.CreateItem(ItemParams{
+	g.entityService.SpawnItem(entityservice.SpawnItemParams{
 		X: 4, Y: 7,
 		Name:   "Scroll of Fireball",
 		Weight: 1, Value: 237,
@@ -108,7 +109,7 @@ func (g *Game) Initialize() {
 		Power:  20,
 	})
 
-	g.entityService.CreateWeapon(WeaponParams{
+	g.entityService.SpawnWeapon(entityservice.SpawnWeaponParams{
 		X: 2, Y: 7,
 		Name:   "Rusty Sword",
 		Weight: 2, Value: 10,
@@ -118,7 +119,7 @@ func (g *Game) Initialize() {
 			components.RightHand,
 		},
 	})
-	g.entityService.CreateArmor(ArmorParams{
+	g.entityService.SpawnArmor(entityservice.SpawnArmorParams{
 		X: 3, Y: 6,
 		Name:   "Leather Chestpiece",
 		Weight: 3, Value: 15,
