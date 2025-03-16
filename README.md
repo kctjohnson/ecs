@@ -21,3 +21,7 @@ Intents give action to an entity and are processed in systems.
 ### Systems
 
 Systems are used to process intents and update the state of the game. They define the logic of the game.
+
+## Next Steps
+
+Check the [todo.md](todo.md) for what is planned coming up.
