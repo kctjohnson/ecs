@@ -2,8 +2,8 @@
 
 - [x] ~~_Equip / use by item ID rather than index_~~
 - [x] ~~_Game view of inventory should only show usable items_~~
-- [ ] Better equipment view, and make list have constant ordering, rather than displaying in any order
-- [ ] Use proper labels rather than stuff like "right_hand"
+- [x] ~~_Better equipment view, and make list have constant ordering, rather than displaying in any order_~~
+- [x] ~~_Use proper labels rather than stuff like "right_hand"_~~
 - [ ] Enemies have inventory, and drop items on death
 - [ ] Show list of items under the player
 - [ ] Pick up only one item at a time when picking things up
