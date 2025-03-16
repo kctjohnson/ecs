@@ -3,8 +3,8 @@ package game
 import (
 	"fmt"
 
+	"ecs/internal/game/components"
 	"ecs/pkg/ecs"
-	"ecs/pkg/game/components"
 )
 
 func (g *Game) entityDefeatedEventHandler(event ecs.Event) {

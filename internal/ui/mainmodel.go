@@ -5,7 +5,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"ecs/pkg/game"
+	"ecs/internal/game"
 )
 
 type Screen int

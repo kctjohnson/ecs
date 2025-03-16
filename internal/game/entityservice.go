@@ -3,8 +3,8 @@ package game
 import (
 	"log"
 
+	"ecs/internal/game/components"
 	"ecs/pkg/ecs"
-	"ecs/pkg/game/components"
 )
 
 type EntityService struct {

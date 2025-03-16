@@ -7,9 +7,9 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
+	"ecs/internal/game"
+	"ecs/internal/game/components"
 	"ecs/pkg/ecs"
-	"ecs/pkg/game"
-	"ecs/pkg/game/components"
 )
 
 type InventorySection int

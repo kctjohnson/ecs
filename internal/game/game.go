@@ -4,12 +4,12 @@ import (
 	"log"
 	"slices"
 
+	"ecs/internal/game/components"
+	"ecs/internal/game/events"
+	"ecs/internal/game/systems"
+	"ecs/internal/turnmanager"
 	"ecs/pkg/ecs"
-	"ecs/pkg/game/components"
-	"ecs/pkg/game/events"
-	"ecs/pkg/game/systems"
 	"ecs/pkg/mathutils"
-	"ecs/pkg/turnmanager"
 )
 
 // Game coordinates all game systems

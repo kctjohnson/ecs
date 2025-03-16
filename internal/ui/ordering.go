@@ -1,8 +1,8 @@
 package ui
 
 import (
+	"ecs/internal/game/components"
 	"ecs/pkg/ecs"
-	"ecs/pkg/game/components"
 )
 
 var equipmentSlotDisplayOrder = []components.EquipmentSlot{

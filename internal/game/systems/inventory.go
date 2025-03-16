@@ -1,9 +1,9 @@
 package systems
 
 import (
+	"ecs/internal/game/components"
+	"ecs/internal/game/events"
 	"ecs/pkg/ecs"
-	"ecs/pkg/game/components"
-	"ecs/pkg/game/events"
 )
 
 // The Inventory System is responsible for handling pickup intents

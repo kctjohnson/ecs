@@ -1,8 +1,8 @@
 package systems
 
 import (
+	"ecs/internal/game/components"
 	"ecs/pkg/ecs"
-	"ecs/pkg/game/components"
 	"ecs/pkg/mathutils"
 )
 

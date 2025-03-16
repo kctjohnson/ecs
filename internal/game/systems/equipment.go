@@ -3,9 +3,9 @@ package systems
 import (
 	"slices"
 
+	"ecs/internal/game/components"
+	"ecs/internal/game/events"
 	"ecs/pkg/ecs"
-	"ecs/pkg/game/components"
-	"ecs/pkg/game/events"
 )
 
 // The Equipment System is responsible for handling equip and unequip intents

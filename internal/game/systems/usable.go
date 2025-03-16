@@ -3,9 +3,9 @@ package systems
 import (
 	"slices"
 
+	"ecs/internal/game/components"
+	"ecs/internal/game/events"
 	"ecs/pkg/ecs"
-	"ecs/pkg/game/components"
-	"ecs/pkg/game/events"
 )
 
 // The Usable System is responsible for handling use item intents

@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"ecs/pkg/game"
-	"ecs/pkg/ui"
+	"ecs/internal/game"
+	"ecs/internal/ui"
 )
 
 func main() {
