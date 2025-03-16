@@ -32,6 +32,7 @@ const (
 	Feet      EquipmentSlot = "feet"
 	LeftHand  EquipmentSlot = "left_hand"
 	RightHand EquipmentSlot = "right_hand"
+	Undefined EquipmentSlot = "undefined"
 )
 
 type ComponentType struct{}

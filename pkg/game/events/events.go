@@ -12,6 +12,8 @@ const (
 	ItemUsed       ecs.EventType = "item_used"
 	ItemEquipped   ecs.EventType = "item_equipped"
 	ItemUnequipped ecs.EventType = "item_unequipped"
+
+	DebugStatusMessage ecs.EventType = "debug_status_message"
 )
 
 // TODO: We need a way for events to be a bit more typed and have a consistent structure?

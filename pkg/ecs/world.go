@@ -1,5 +1,7 @@
 package ecs
 
+import "log"
+
 // World is the main ECS container that holds all entities, components, and systems
 type World struct {
 	EntityManager    *EntityManager
@@ -7,15 +9,17 @@ type World struct {
 	systems          []System
 	eventQueue       []Event // Simple event queue for communication
 	eventHandlers    map[EventType][]func(Event)
+	Logger           *log.Logger
 }
 
-func NewWorld() *World {
+func NewWorld(logger *log.Logger) *World {
 	return &World{
 		EntityManager:    NewEntityManager(),
 		ComponentManager: NewComponentManager(),
 		systems:          []System{},
 		eventQueue:       []Event{},
 		eventHandlers:    make(map[EventType][]func(Event)),
+		Logger:           logger,
 	}
 }
 

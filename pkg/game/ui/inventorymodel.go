@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"log"
 	"slices"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -22,12 +23,16 @@ type InventoryModel struct {
 	game         *game.Game
 	sectionFocus InventorySection
 	activeHover  int // Index of the hovered item/equipment (depending on sectionFocus)
+
+	logger *log.Logger
 }
 
-func NewInventoryModel(game *game.Game) InventoryModel {
+func NewInventoryModel(game *game.Game, logger *log.Logger) InventoryModel {
 	return InventoryModel{
 		game:         game,
 		sectionFocus: InventorySectionItems,
+		activeHover:  0,
+		logger:       logger,
 	}
 }
 
@@ -90,30 +95,42 @@ func (m InventoryModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if itemEnt := inventory.Items[m.activeHover]; itemEnt != -1 {
 					if _, hasUsable := m.game.GetComponent(itemEnt, components.Usable); hasUsable {
 						m.game.ProcessPlayerUseItem(m.activeHover)
+						m.game.RunPlayerTurn()
+						m.game.RunAITurns()
 					}
 				}
 			}
+
+			return m, nil
 
 		case "d": // Drop item
 			if m.sectionFocus == InventorySectionItems {
 				if itemEnt := inventory.Items[m.activeHover]; itemEnt != -1 {
 					m.game.ProcessPlayerDropItem(m.activeHover)
+					m.game.UpdateWorld()
 				}
 			}
+
+			return m, nil
 
 		case "e": // Equip item
 			if m.sectionFocus == InventorySectionItems {
 				if itemEnt := inventory.Items[m.activeHover]; itemEnt != -1 {
 					if _, hasEquippable := m.game.GetComponent(itemEnt, components.Equippable); hasEquippable {
 						m.game.ProcessPlayerEquipItem(m.activeHover)
+						m.game.UpdateWorld()
 					}
 				}
 			} else if m.sectionFocus == InventorySectionEquipment {
 				slotSlice := m.slotsToSlice(inventory.Slots)
 				m.game.ProcessPlayerUnequipItem(slotSlice[m.activeHover])
+				m.game.UpdateWorld()
 			}
+
+			return m, nil
 		}
 	}
+
 	return m, nil
 }
 
@@ -162,6 +179,8 @@ func (m InventoryModel) View() string {
 			}
 		}
 	}
+
+	screen += "\n\n" + m.getControls()
 	return screen
 }
 
@@ -178,4 +197,44 @@ func (m InventoryModel) slotsToSlice(slots map[components.EquipmentSlot]ecs.Enti
 	slices.Sort(slice)
 
 	return slice
+}
+
+func (m InventoryModel) getControlsForItem(itemEnt ecs.Entity) string {
+	controls := ""
+	if _, hasUsable := m.game.GetComponent(itemEnt, components.Usable); hasUsable {
+		controls += "Use (u)\n"
+	}
+	if _, hasEquippable := m.game.GetComponent(itemEnt, components.Equippable); hasEquippable {
+		controls += "Equip (e)\n"
+	}
+	controls += "Drop (d)\n"
+	return controls
+}
+
+func (m InventoryModel) getControlsForEquipment() string {
+	controls := "Unequip (e)\n"
+	return controls
+}
+
+func (m InventoryModel) getControls() string {
+	controls := "Switch focus (tab)\n"
+	if m.sectionFocus == InventorySectionItems {
+		player := m.game.GetPlayerEntity()
+		if player == -1 {
+			return controls
+		}
+
+		inventoryComp, hasInventory := m.game.GetComponent(player, components.Inventory)
+		if !hasInventory {
+			return controls
+		}
+
+		inventory := inventoryComp.(*components.InventoryComponent)
+		if m.activeHover < len(inventory.Items) {
+			controls += m.getControlsForItem(inventory.Items[m.activeHover])
+		}
+	} else if m.sectionFocus == InventorySectionEquipment {
+		controls += m.getControlsForEquipment()
+	}
+	return controls
 }

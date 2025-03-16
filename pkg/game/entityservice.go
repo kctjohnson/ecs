@@ -1,17 +1,21 @@
 package game
 
 import (
+	"log"
+
 	"ecs/pkg/ecs"
 	"ecs/pkg/game/components"
 )
 
 type EntityService struct {
-	world *ecs.World
+	world  *ecs.World
+	logger *log.Logger
 }
 
-func NewEntityService(world *ecs.World) *EntityService {
+func NewEntityService(world *ecs.World, logger *log.Logger) *EntityService {
 	return &EntityService{
-		world: world,
+		world:  world,
+		logger: logger,
 	}
 }
 

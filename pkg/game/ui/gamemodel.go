@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"log"
 	"slices"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -14,10 +15,15 @@ import (
 // GameModel implements bubbletea.Model for our game
 type GameModel struct {
 	game *game.Game
+
+	logger *log.Logger
 }
 
-func NewGameModel(game *game.Game) GameModel {
-	return GameModel{game: game}
+func NewGameModel(game *game.Game, logger *log.Logger) GameModel {
+	return GameModel{
+		game:   game,
+		logger: logger,
+	}
 }
 
 func (m GameModel) Init() tea.Cmd {

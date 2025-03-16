@@ -52,36 +52,30 @@ func (es *EquipmentSystem) handleEquipIntent(ent ecs.Entity, world *ecs.World) {
 		return
 	}
 
-	// Add the item to the equipment slot
-	world.ComponentManager.AddComponent(
-		equipIntent.Target,
-		components.EquipIntent,
-		&components.EquipIntentComponent{
-			ItemEntity: equipIntent.ItemEntity,
-			Slot:       equipIntent.Slot,
-			Target:     equipIntent.Target,
-		},
-	)
-
-	// Remove the item from the inventory
 	inventoryComp, _ := world.ComponentManager.GetComponent(
 		equipIntent.Target,
 		components.Inventory,
 	)
 	inventory := inventoryComp.(*components.InventoryComponent)
 
+	// Add the item to the equipment slot
+	inventory.Slots[equipIntent.Slot] = equipIntent.ItemEntity
+
+	// Remove the item from the inventory
 	for i, item := range inventory.Items {
 		if item == equipIntent.ItemEntity {
 			inventory.Items = slices.Delete(inventory.Items, i, i+1)
 			break
 		}
 	}
-
 	// Queue event
 	world.QueueEvent(events.ItemEquipped, ent, map[string]any{
 		"item":   equipIntent.ItemEntity,
 		"target": equipIntent.Target,
 	})
+
+	// Remove the equip intent component
+	world.ComponentManager.RemoveComponent(ent, components.EquipIntent)
 }
 
 func (es *EquipmentSystem) handleUnequipIntent(ent ecs.Entity, world *ecs.World) {
@@ -102,7 +96,7 @@ func (es *EquipmentSystem) handleUnequipIntent(ent ecs.Entity, world *ecs.World)
 
 	itemEntity := inventory.Slots[unequipIntent.Slot]
 
-	// Remove the item from the equipment slot
+	// Remove the item from the equipment slot map
 	delete(inventory.Slots, unequipIntent.Slot)
 
 	// Add the item to the inventory
@@ -113,6 +107,9 @@ func (es *EquipmentSystem) handleUnequipIntent(ent ecs.Entity, world *ecs.World)
 		"item":   itemEntity,
 		"target": unequipIntent.Target,
 	})
+
+	// Remove the unequip intent component
+	world.ComponentManager.RemoveComponent(ent, components.UnequipIntent)
 }
 
 func (es *EquipmentSystem) canEquipInSlot(

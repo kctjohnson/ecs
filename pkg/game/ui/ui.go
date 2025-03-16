@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -44,11 +45,11 @@ var (
 	emptyChar = "·" // Using a middle dot for empty space
 )
 
-func RunGame(g *game.Game) {
+func RunGame(g *game.Game, logger *log.Logger) {
 	g.Initialize()
 
 	p := tea.NewProgram(
-		NewMainModel(g),
+		NewMainModel(g, logger),
 		tea.WithAltScreen(),
 	)
 

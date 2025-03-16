@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"log"
+
 	tea "github.com/charmbracelet/bubbletea"
 
 	"ecs/pkg/game"
@@ -18,14 +20,18 @@ type MainModel struct {
 	activeScreen   Screen
 	gameModel      GameModel
 	inventoryModel InventoryModel
+
+	logger *log.Logger
 }
 
-func NewMainModel(game *game.Game) MainModel {
+func NewMainModel(game *game.Game, logger *log.Logger) MainModel {
+
 	return MainModel{
 		game:           game,
 		activeScreen:   GameScreen,
-		gameModel:      NewGameModel(game),
-		inventoryModel: NewInventoryModel(game),
+		gameModel:      NewGameModel(game, logger),
+		inventoryModel: NewInventoryModel(game, logger),
+		logger:         logger,
 	}
 }
 

@@ -1,7 +1,7 @@
 package game
 
 import (
-	"fmt"
+	"log"
 	"slices"
 
 	"ecs/pkg/ecs"
@@ -22,10 +22,12 @@ type Game struct {
 	height        int
 	gameOver      bool
 	statusMessage string
+
+	logger *log.Logger
 }
 
-func NewGame() *Game {
-	world := ecs.NewWorld()
+func NewGame(logger *log.Logger) *Game {
+	world := ecs.NewWorld(logger)
 
 	// Create system instances
 	aiSystem := &systems.AISystem{}
@@ -41,11 +43,12 @@ func NewGame() *Game {
 		world:         world,
 		turnManager:   turnmanager.NewTurnManager(world),
 		aiSystem:      aiSystem,
-		entityService: NewEntityService(world),
+		entityService: NewEntityService(world, logger),
 		width:         20,
 		height:        10,
 		gameOver:      false,
 		statusMessage: "Use arrow keys to move, space to pick up items, 1-9 to use items, Q to quit",
+		logger:        logger,
 	}
 }
 
@@ -54,48 +57,12 @@ func (g *Game) Initialize() {
 	g.registerComponentTypes()
 
 	// Register event handlers
-	g.world.RegisterEventHandler(events.EntityDefeated, func(event ecs.Event) {
-		g.turnManager.RemoveEntity(event.Entity)
-
-		// Check if player was defeated
-		if g.world.ComponentManager.HasComponent(event.Entity, components.PlayerControlled) {
-			g.gameOver = true
-			g.statusMessage = "Game Over! You were defeated! Press Q to quit."
-		} else {
-			g.statusMessage = fmt.Sprintf("You defeated entity %d!", event.Entity)
-		}
-	})
-
-	g.world.RegisterEventHandler(events.ItemPickedUp, func(event ecs.Event) {
-		itemID, ok := event.Data["item"].(ecs.Entity)
-		if ok {
-			if itemComp, hasItem := g.world.ComponentManager.GetComponent(itemID, components.Item); hasItem {
-				item := itemComp.(*components.ItemComponent)
-				g.statusMessage = fmt.Sprintf("Picked up %s", item.Name)
-			}
-		}
-	})
-
-	g.world.RegisterEventHandler(events.ItemUsed, func(event ecs.Event) {
-		itemID, ok := event.Data["item"].(ecs.Entity)
-		if ok {
-			if itemComp, hasItem := g.world.ComponentManager.GetComponent(itemID, components.Item); hasItem {
-				item := itemComp.(*components.ItemComponent)
-				g.statusMessage = fmt.Sprintf("Used %s", item.Name)
-				if target, ok := event.Data["target"].(ecs.Entity); ok {
-					if healthComp, hasHealth := g.world.ComponentManager.GetComponent(target, components.Health); hasHealth {
-						health := healthComp.(*components.HealthComponent)
-						g.statusMessage += fmt.Sprintf(
-							" on %d (HP %d/%d)",
-							target,
-							health.HP,
-							health.MaxHP,
-						)
-					}
-				}
-			}
-		}
-	})
+	g.world.RegisterEventHandler(events.EntityDefeated, g.entityDefeatedEventHandler)
+	g.world.RegisterEventHandler(events.ItemPickedUp, g.itemPickedUpEventHandler)
+	g.world.RegisterEventHandler(events.ItemUsed, g.itemUsedEventHandler)
+	g.world.RegisterEventHandler(events.ItemEquipped, g.itemEquippedEventHandler)
+	g.world.RegisterEventHandler(events.ItemUnequipped, g.itemUnequippedEventHandler)
+	g.world.RegisterEventHandler(events.DebugStatusMessage, g.debugStatusEventHandler)
 
 	// Create player
 	player := g.entityService.CreatePlayer(PlayerParams{
@@ -431,11 +398,95 @@ func (g *Game) ProcessPlayerDropItem(itemIndex int) {
 }
 
 func (g *Game) ProcessPlayerEquipItem(itemIndex int) {
+	player := g.GetPlayerEntity()
+	if player == -1 {
+		return
+	}
 
+	// Get inventory
+	inventoryComp, hasInventory := g.world.ComponentManager.GetComponent(
+		player,
+		components.Inventory,
+	)
+	if !hasInventory {
+		g.statusMessage = "No inventory found"
+		return
+	}
+
+	inventory := inventoryComp.(*components.InventoryComponent)
+	if len(inventory.Items) == 0 {
+		g.statusMessage = "Inventory is empty"
+		return
+	}
+
+	if itemIndex < 0 || itemIndex >= len(inventory.Items) {
+		g.statusMessage = "Invalid item index"
+		return
+	}
+
+	// Make sure item is equippable
+	equippableComp, hasEquippable := g.world.ComponentManager.GetComponent(
+		inventory.Items[itemIndex],
+		components.Equippable,
+	)
+	if !hasEquippable {
+		g.statusMessage = "Item is not equippable"
+		return
+	}
+	equippable := equippableComp.(*components.EquippableComponent)
+
+	// Equip item
+	g.world.ComponentManager.AddComponent(
+		player,
+		components.EquipIntent,
+		&components.EquipIntentComponent{
+			ItemEntity: inventory.Items[itemIndex],
+			Slot:       equippable.Slots[0],
+			Target:     player,
+		},
+	)
 }
 
 func (g *Game) ProcessPlayerUnequipItem(itemEntity ecs.Entity) {
+	player := g.GetPlayerEntity()
+	if player == -1 {
+		return
+	}
 
+	// Get equipment slots
+	inventoryComp, hasInventory := g.world.ComponentManager.GetComponent(
+		player,
+		components.Inventory,
+	)
+	if !hasInventory {
+		g.statusMessage = "No inventory found"
+		return
+	}
+	inventory := inventoryComp.(*components.InventoryComponent)
+
+	var slot components.EquipmentSlot
+	slot = components.Undefined
+	for equipmentSlot, itemEnt := range inventory.Slots {
+		if itemEnt == itemEntity {
+			slot = equipmentSlot
+			break
+		}
+	}
+
+	if slot == components.Undefined {
+		g.statusMessage = "Item is not equipped"
+		return
+	}
+
+	// Unequip item
+	g.world.ComponentManager.AddComponent(
+		player,
+		components.UnequipIntent,
+		&components.UnequipIntentComponent{
+			Slot:   slot,
+			Target: player,
+		},
+	)
 }
 
 // ProcessAITurn processes AI turns for all AI-controlled entities
@@ -457,6 +508,11 @@ func (g *Game) ProcessAITurn() bool {
 	g.aiSystem.Update(g.world)
 
 	return false
+}
+
+func (g *Game) UpdateWorld() {
+	// Update ECS world (runs all systems)
+	g.world.Update()
 }
 
 func (g *Game) RunPlayerTurn() {
