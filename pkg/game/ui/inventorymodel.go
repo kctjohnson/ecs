@@ -43,7 +43,7 @@ func (m InventoryModel) Init() tea.Cmd {
 func (m InventoryModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// If tab is pressed, switch focus between items and equipment
 	// If an item has Usable, have a Use button (u)
-	// If an item has Equipable, have an Equip button (e)
+	// If an item has Equippable, have an Equip button (e)
 	// User can press (d) to drop an item
 	// User can press (esc) to close the inventory
 	// User can use arrow keys / jk to navigate the inventory
