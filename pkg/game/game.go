@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"slices"
 
 	"ecs/pkg/ecs"
 	"ecs/pkg/game/components"
@@ -380,6 +381,61 @@ func (g *Game) ProcessPlayerUseItem(itemIndex int) {
 		)
 	case components.RepairEffect:
 	}
+}
+
+func (g *Game) ProcessPlayerDropItem(itemIndex int) {
+	player := g.GetPlayerEntity()
+	if player == -1 {
+		return
+	}
+
+	playerPosComp, _ := g.world.ComponentManager.GetComponent(
+		player,
+		components.Position,
+	)
+	playerPos := playerPosComp.(*components.PositionComponent)
+
+	// Get inventory
+	inventoryComp, hasInventory := g.world.ComponentManager.GetComponent(
+		player,
+		components.Inventory,
+	)
+	if !hasInventory {
+		g.statusMessage = "No inventory found"
+		return
+	}
+
+	inventory := inventoryComp.(*components.InventoryComponent)
+	if len(inventory.Items) == 0 {
+		g.statusMessage = "Inventory is empty"
+		return
+	}
+
+	if itemIndex < 0 || itemIndex >= len(inventory.Items) {
+		g.statusMessage = "Invalid item index"
+		return
+	}
+
+	// Drop item by adding a position component to the item entity
+	itemEntity := inventory.Items[itemIndex]
+	g.world.ComponentManager.AddComponent(
+		itemEntity,
+		components.Position,
+		&components.PositionComponent{
+			X: playerPos.X, Y: playerPos.Y,
+		},
+	)
+
+	// Remove item from inventory
+	inventory.Items = slices.Delete(inventory.Items, itemIndex, itemIndex+1)
+}
+
+func (g *Game) ProcessPlayerEquipItem(itemIndex int) {
+
+}
+
+func (g *Game) ProcessPlayerUnequipItem(itemEntity ecs.Entity) {
+
 }
 
 // ProcessAITurn processes AI turns for all AI-controlled entities

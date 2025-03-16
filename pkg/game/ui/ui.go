@@ -32,9 +32,14 @@ var (
 
 	inventoryStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("#FFFFFF")).
-			Background(lipgloss.Color("#777733")).
+			Background(lipgloss.Color("#333333")).
 			PaddingLeft(1).
 			PaddingRight(1)
+
+	itemHoverStyle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#FFFFFF")).
+			Background(lipgloss.Color("#7D56F4")).
+			Underline(true)
 
 	emptyChar = "·" // Using a middle dot for empty space
 )
