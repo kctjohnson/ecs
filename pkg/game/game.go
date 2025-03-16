@@ -44,7 +44,7 @@ func NewGame(logger *log.Logger) *Game {
 		turnManager:   turnmanager.NewTurnManager(world),
 		aiSystem:      aiSystem,
 		entityService: NewEntityService(world, logger),
-		width:         20,
+		width:         30,
 		height:        10,
 		gameOver:      false,
 		statusMessage: "Use arrow keys to move, space to pick up items, 1-9 to use items, Q to quit",
@@ -74,7 +74,7 @@ func (g *Game) Initialize() {
 
 	// Create enemies
 	enemy := g.entityService.CreateEnemy(EnemyParams{
-		X: 7, Y: 3,
+		X: 15, Y: 9,
 		HP: 50, MaxHP: 50,
 		Strength: 10,
 		Sprite:   'G',
@@ -82,14 +82,14 @@ func (g *Game) Initialize() {
 	g.turnManager.AddEntity(enemy)
 
 	enemy2 := g.entityService.CreateEnemy(EnemyParams{
-		X: 12, Y: 5,
+		X: 19, Y: 8,
 		HP: 30, MaxHP: 30,
 		Strength: 7,
 		Sprite:   'g',
 	})
 	g.turnManager.AddEntity(enemy2)
 
-	// Create item
+	// Create items
 	g.entityService.CreateItem(ItemParams{
 		X: 5, Y: 5,
 		Name:   "Red Potion",
@@ -106,6 +106,25 @@ func (g *Game) Initialize() {
 		Sprite: '~',
 		Effect: components.DamageEffect,
 		Power:  20,
+	})
+
+	g.entityService.CreateWeapon(WeaponParams{
+		X: 2, Y: 7,
+		Name:   "Rusty Sword",
+		Weight: 2, Value: 10,
+		Sprite: '|',
+		Damage: 5,
+		Slots: []components.EquipmentSlot{
+			components.RightHand,
+		},
+	})
+	g.entityService.CreateArmor(ArmorParams{
+		X: 3, Y: 6,
+		Name:   "Leather Chestpiece",
+		Weight: 3, Value: 15,
+		Sprite:  'C',
+		Defense: 3,
+		Slots:   []components.EquipmentSlot{components.Torso},
 	})
 }
 

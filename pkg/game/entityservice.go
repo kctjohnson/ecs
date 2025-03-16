@@ -182,3 +182,95 @@ func (es *EntityService) CreateItem(itemParams ItemParams) ecs.Entity {
 
 	return item
 }
+
+type WeaponParams struct {
+	X, Y   int
+	Name   string
+	Weight int
+	Value  int
+	Sprite rune
+	Damage int
+	Slots  []components.EquipmentSlot
+}
+
+func (es *EntityService) CreateWeapon(weaponParams WeaponParams) ecs.Entity {
+	weapon := es.world.EntityManager.CreateEntity()
+	es.world.ComponentManager.AddComponent(
+		weapon,
+		components.Position,
+		&components.PositionComponent{X: weaponParams.X, Y: weaponParams.Y},
+	)
+	es.world.ComponentManager.AddComponent(
+		weapon,
+		components.Sprite,
+		&components.SpriteComponent{Char: weaponParams.Sprite},
+	)
+	es.world.ComponentManager.AddComponent(
+		weapon,
+		components.Item,
+		&components.ItemComponent{
+			Name:   weaponParams.Name,
+			Weight: weaponParams.Weight,
+			Value:  weaponParams.Value,
+		},
+	)
+	es.world.ComponentManager.AddComponent(
+		weapon,
+		components.Equippable,
+		&components.EquippableComponent{Slots: weaponParams.Slots},
+	)
+	es.world.ComponentManager.AddComponent(
+		weapon,
+		components.Weapon,
+		&components.WeaponComponent{Damage: weaponParams.Damage},
+	)
+
+	return weapon
+}
+
+type ArmorParams struct {
+	X, Y    int
+	Name    string
+	Weight  int
+	Value   int
+	Sprite  rune
+	Defense int
+	Slots   []components.EquipmentSlot
+}
+
+func (es *EntityService) CreateArmor(armorParams ArmorParams) ecs.Entity {
+	armor := es.world.EntityManager.CreateEntity()
+	es.world.ComponentManager.AddComponent(
+		armor,
+		components.Position,
+		&components.PositionComponent{X: armorParams.X, Y: armorParams.Y},
+	)
+	es.world.ComponentManager.AddComponent(
+		armor,
+		components.Sprite,
+		&components.SpriteComponent{Char: armorParams.Sprite},
+	)
+	es.world.ComponentManager.AddComponent(
+		armor,
+		components.Item,
+		&components.ItemComponent{
+			Name:   armorParams.Name,
+			Weight: armorParams.Weight,
+			Value:  armorParams.Value,
+		},
+	)
+	es.world.ComponentManager.AddComponent(
+		armor,
+		components.Equippable,
+		&components.EquippableComponent{Slots: armorParams.Slots},
+	)
+	es.world.ComponentManager.AddComponent(
+		armor,
+		components.Armor,
+		&components.ArmorComponent{
+			Defense: armorParams.Defense,
+		},
+	)
+
+	return armor
+}
