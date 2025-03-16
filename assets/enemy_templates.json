@@ -1,0 +1,122 @@
+[
+  {
+    "id": "goblin",
+    "name": "Goblin",
+    "sprite": "g",
+    "rarity": "common",
+    "attributes": {
+      "hp": {
+        "base": 20,
+        "variance": 5
+      },
+      "strength": {
+        "base": 4,
+        "variance": 2
+      }
+    },
+    "loot_table": [
+      {
+        "item_id": "rusty_sword",
+        "probability": 0.3
+      },
+      {
+        "item_id": "leather_armor",
+        "probability": 0.2
+      },
+      {
+        "item_id": "health_potion",
+        "probability": 0.5
+      }
+    ]
+  },
+  {
+    "id": "elite_goblin",
+    "name": "Elite Goblin",
+    "sprite": "G",
+    "rarity": "uncommon",
+    "attributes": {
+      "hp": {
+        "base": 35,
+        "variance": 5
+      },
+      "strength": {
+        "base": 8,
+        "variance": 2
+      }
+    },
+    "loot_table": [
+      {
+        "item_id": "rusty_sword",
+        "probability": 0.3
+      },
+      {
+        "item_id": "leather_armor",
+        "probability": 0.2
+      },
+      {
+        "item_id": "health_potion",
+        "probability": 0.5
+      }
+    ]
+  },
+  {
+    "id": "orc",
+    "name": "Orc",
+    "sprite": "O",
+    "rarity": "uncommon",
+    "attributes": {
+      "hp": {
+        "base": 40,
+        "variance": 10
+      },
+      "strength": {
+        "base": 8,
+        "variance": 3
+      }
+    },
+    "loot_table": [
+      {
+        "item_id": "battle_axe",
+        "probability": 0.4
+      },
+      {
+        "item_id": "chain_mail",
+        "probability": 0.3
+      },
+      {
+        "item_id": "health_potion",
+        "probability": 0.6
+      }
+    ]
+  },
+  {
+    "id": "troll",
+    "name": "Troll",
+    "sprite": "T",
+    "rarity": "rare",
+    "attributes": {
+      "hp": {
+        "base": 80,
+        "variance": 20
+      },
+      "strength": {
+        "base": 12,
+        "variance": 4
+      }
+    },
+    "loot_table": [
+      {
+        "item_id": "troll_club",
+        "probability": 0.5
+      },
+      {
+        "item_id": "troll_hide",
+        "probability": 0.4
+      },
+      {
+        "item_id": "healing_herb",
+        "probability": 0.7
+      }
+    ]
+  }
+]

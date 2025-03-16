@@ -1,0 +1,178 @@
+[
+  {
+    "id": "rusty_sword",
+    "name": "Rusty Sword",
+    "type": "weapon",
+    "sprite": "|",
+    "rarity": "common",
+    "attributes": {
+      "weight": 5,
+      "value": 10,
+      "damage": {
+        "base": 3,
+        "variance": 1
+      }
+    },
+    "slots": ["right_hand", "left_hand"]
+  },
+  {
+    "id": "iron_sword",
+    "name": "Iron Sword",
+    "type": "weapon",
+    "sprite": "|",
+    "rarity": "common",
+    "attributes": {
+      "weight": 5,
+      "value": 25,
+      "damage": {
+        "base": 6,
+        "variance": 1
+      }
+    },
+    "slots": ["right_hand", "left_hand"]
+  },
+  {
+    "id": "steel_sword",
+    "name": "Steel Sword",
+    "type": "weapon",
+    "sprite": "|",
+    "rarity": "uncommon",
+    "attributes": {
+      "weight": 6,
+      "value": 75,
+      "damage": {
+        "base": 13,
+        "variance": 2
+      }
+    },
+    "slots": ["right_hand", "left_hand"]
+  },
+  {
+    "id": "battle_axe",
+    "name": "Battle Axe",
+    "type": "weapon",
+    "sprite": "⚒",
+    "rarity": "uncommon",
+    "attributes": {
+      "weight": 8,
+      "value": 35,
+      "damage": {
+        "base": 7,
+        "variance": 2
+      }
+    },
+    "slots": ["right_hand"]
+  },
+  {
+    "id": "troll_club",
+    "name": "Troll Club",
+    "type": "weapon",
+    "sprite": "!",
+    "rarity": "rare",
+    "attributes": {
+      "weight": 12,
+      "value": 75,
+      "damage": {
+        "base": 12,
+        "variance": 3
+      }
+    },
+    "slots": ["right_hand"]
+  },
+  {
+    "id": "leather_armor",
+    "name": "Leather Armor",
+    "type": "armor",
+    "sprite": "C",
+    "rarity": "common",
+    "attributes": {
+      "weight": 6,
+      "value": 20,
+      "defense": {
+        "base": 2,
+        "variance": 1
+      }
+    },
+    "slots": ["torso"]
+  },
+  {
+    "id": "chain_mail",
+    "name": "Chain Mail",
+    "type": "armor",
+    "sprite": "M",
+    "rarity": "uncommon",
+    "attributes": {
+      "weight": 10,
+      "value": 45,
+      "defense": {
+        "base": 5,
+        "variance": 2
+      }
+    },
+    "slots": ["torso"]
+  },
+  {
+    "id": "troll_hide",
+    "name": "Troll Hide",
+    "type": "armor",
+    "sprite": "H",
+    "rarity": "rare",
+    "attributes": {
+      "weight": 15,
+      "value": 90,
+      "defense": {
+        "base": 8,
+        "variance": 2
+      }
+    },
+    "slots": ["torso"]
+  },
+  {
+    "id": "health_potion",
+    "name": "Health Potion",
+    "type": "consumable",
+    "sprite": "o",
+    "rarity": "common",
+    "attributes": {
+      "weight": 1,
+      "value": 15,
+      "effect": "heal",
+      "power": {
+        "base": 15,
+        "variance": 5
+      }
+    }
+  },
+  {
+    "id": "healing_herb",
+    "name": "Healing Herb",
+    "type": "consumable",
+    "sprite": "*",
+    "rarity": "uncommon",
+    "attributes": {
+      "weight": 1,
+      "value": 30,
+      "effect": "heal",
+      "power": {
+        "base": 25,
+        "variance": 10
+      }
+    }
+  },
+  {
+    "id": "fireball_scroll",
+    "name": "Scroll of Fireball",
+    "type": "consumable",
+    "sprite": "~",
+    "rarity": "rare",
+    "attributes": {
+      "weight": 1,
+      "value": 100,
+      "effect": "damage",
+      "power": {
+        "base": 30,
+        "variance": 10
+      }
+    }
+  }
+]
