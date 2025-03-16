@@ -94,7 +94,7 @@ func (m InventoryModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.sectionFocus == InventorySectionItems {
 				if itemEnt := inventory.Items[m.activeHover]; itemEnt != -1 {
 					if _, hasUsable := m.game.GetComponent(itemEnt, components.Usable); hasUsable {
-						m.game.ProcessPlayerUseItem(m.activeHover)
+						m.game.ProcessPlayerUseItem(itemEnt)
 						m.game.RunPlayerTurn()
 						m.game.RunAITurns()
 					}
@@ -106,7 +106,7 @@ func (m InventoryModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "d": // Drop item
 			if m.sectionFocus == InventorySectionItems {
 				if itemEnt := inventory.Items[m.activeHover]; itemEnt != -1 {
-					m.game.ProcessPlayerDropItem(m.activeHover)
+					m.game.ProcessPlayerDropItem(itemEnt)
 					m.game.UpdateWorld()
 				}
 			}
@@ -117,7 +117,7 @@ func (m InventoryModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.sectionFocus == InventorySectionItems {
 				if itemEnt := inventory.Items[m.activeHover]; itemEnt != -1 {
 					if _, hasEquippable := m.game.GetComponent(itemEnt, components.Equippable); hasEquippable {
-						m.game.ProcessPlayerEquipItem(m.activeHover)
+						m.game.ProcessPlayerEquipItem(itemEnt)
 						m.game.UpdateWorld()
 					}
 				}

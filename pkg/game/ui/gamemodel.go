@@ -87,10 +87,14 @@ func (m GameModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 
 			case "1", "2", "3", "4", "5", "6", "7", "8", "9":
-				itemIndex := int(msg.String()[0] - '1') // Convert to 0-based index
-				m.game.ProcessPlayerUseItem(itemIndex)
-				m.game.RunPlayerTurn()
-				m.game.RunAITurns()
+				selectIndex := int(msg.String()[0] - '1') // Convert to 0-based index
+				usableEnts := m.game.GetPlayerUsableItems()
+				if selectIndex < len(usableEnts) {
+					selectedUsableItem := usableEnts[selectIndex]
+					m.game.ProcessPlayerUseItem(selectedUsableItem)
+					m.game.RunPlayerTurn()
+					m.game.RunAITurns()
+				}
 				return m, nil
 			}
 		}
@@ -198,12 +202,13 @@ func (m GameModel) View() string {
 			// Display inventory for player
 			inventory := inventoryComp.(*components.InventoryComponent)
 
-			board += "\n" + inventoryStyle.Render(" Inventory ") + "\n"
+			board += "\n" + inventoryStyle.Render(" Quick Inventory ") + "\n"
 
 			if len(inventory.Items) == 0 {
 				board += "Empty\n"
 			} else {
-				for i, itemEnt := range inventory.Items {
+				usableItems := g.GetPlayerUsableItems()
+				for i, itemEnt := range usableItems {
 					if itemComp, hasItem := g.GetComponent(itemEnt, components.Item); hasItem {
 						item := itemComp.(*components.ItemComponent)
 						board += fmt.Sprintf("%d) %s [%d gp] [%d lb]\n", i+1, item.Name, item.Value, item.Weight)

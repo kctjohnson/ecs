@@ -180,6 +180,39 @@ func (g *Game) GetCurrentEntity() ecs.Entity {
 	return g.turnManager.GetCurrentEntity()
 }
 
+func (g *Game) GetPlayerInventory() *components.InventoryComponent {
+	player := g.GetPlayerEntity()
+	if player == -1 {
+		return nil
+	}
+
+	inventoryComp, hasInventory := g.world.ComponentManager.GetComponent(
+		player,
+		components.Inventory,
+	)
+	if !hasInventory {
+		return nil
+	}
+
+	return inventoryComp.(*components.InventoryComponent)
+}
+
+func (g *Game) GetPlayerUsableItems() []ecs.Entity {
+	playerInventory := g.GetPlayerInventory()
+	if playerInventory == nil {
+		return nil
+	}
+
+	var usables []ecs.Entity
+	for _, itemEntity := range playerInventory.Items {
+		if g.world.ComponentManager.HasComponent(itemEntity, components.Usable) {
+			usables = append(usables, itemEntity)
+		}
+	}
+
+	return usables
+}
+
 // ProcessPlayerMove processes player movement input
 // Adds a MoveIntent component to the player entity if valid move
 // Adds an AttackIntent component if an enemy is at the target position
@@ -256,7 +289,7 @@ func (g *Game) ProcessPlayerPickup() {
 
 // ProcessPlayerUseItem processes player use item input
 // Adds a UseItemIntent component to the player entity
-func (g *Game) ProcessPlayerUseItem(itemIndex int) {
+func (g *Game) ProcessPlayerUseItem(itemEntity ecs.Entity) {
 	player := g.GetPlayerEntity()
 	if player == -1 {
 		return
@@ -278,8 +311,17 @@ func (g *Game) ProcessPlayerUseItem(itemIndex int) {
 		return
 	}
 
-	if itemIndex < 0 || itemIndex >= len(inventory.Items) {
-		g.statusMessage = "Invalid item index"
+	// Make sure item is in inventory
+	itemIndex := -1
+	for i, itemEnt := range inventory.Items {
+		if itemEnt == itemEntity {
+			itemIndex = i
+			break
+		}
+	}
+
+	if itemIndex == -1 {
+		g.statusMessage = "Item not found in inventory"
 		return
 	}
 
@@ -369,7 +411,7 @@ func (g *Game) ProcessPlayerUseItem(itemIndex int) {
 	}
 }
 
-func (g *Game) ProcessPlayerDropItem(itemIndex int) {
+func (g *Game) ProcessPlayerDropItem(itemEntity ecs.Entity) {
 	player := g.GetPlayerEntity()
 	if player == -1 {
 		return
@@ -397,13 +439,21 @@ func (g *Game) ProcessPlayerDropItem(itemIndex int) {
 		return
 	}
 
-	if itemIndex < 0 || itemIndex >= len(inventory.Items) {
-		g.statusMessage = "Invalid item index"
+	// Make sure item is in inventory, and get its index
+	itemIndex := -1
+	for i, itemEnt := range inventory.Items {
+		if itemEnt == itemEntity {
+			itemIndex = i
+			break
+		}
+	}
+
+	if itemIndex == -1 {
+		g.statusMessage = "Item not found in inventory"
 		return
 	}
 
 	// Drop item by adding a position component to the item entity
-	itemEntity := inventory.Items[itemIndex]
 	g.world.ComponentManager.AddComponent(
 		itemEntity,
 		components.Position,
@@ -416,7 +466,7 @@ func (g *Game) ProcessPlayerDropItem(itemIndex int) {
 	inventory.Items = slices.Delete(inventory.Items, itemIndex, itemIndex+1)
 }
 
-func (g *Game) ProcessPlayerEquipItem(itemIndex int) {
+func (g *Game) ProcessPlayerEquipItem(itemEntity ecs.Entity) {
 	player := g.GetPlayerEntity()
 	if player == -1 {
 		return
@@ -438,8 +488,17 @@ func (g *Game) ProcessPlayerEquipItem(itemIndex int) {
 		return
 	}
 
-	if itemIndex < 0 || itemIndex >= len(inventory.Items) {
-		g.statusMessage = "Invalid item index"
+	// Make sure item is in inventory, and get its index
+	itemIndex := -1
+	for i, itemEnt := range inventory.Items {
+		if itemEnt == itemEntity {
+			itemIndex = i
+			break
+		}
+	}
+
+	if itemIndex == -1 {
+		g.statusMessage = "Item not found in inventory"
 		return
 	}
 

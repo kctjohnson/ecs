@@ -1,7 +1,7 @@
 # TODO List
 
-- [ ] Game view of inventory should only show usable items
-- [ ] Equip / use by item ID rather than index
+- [x] ~~_Equip / use by item ID rather than index_~~
+- [x] ~~_Game view of inventory should only show usable items_~~
 - [ ] Better equipment view, and make list have constant ordering, rather than displaying in any order
 - [ ] Use proper labels rather than stuff like "right_hand"
 - [ ] Enemies have inventory, and drop items on death
