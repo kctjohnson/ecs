@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"ecs/pkg/game"
-	"ecs/pkg/game/ui"
+	"ecs/pkg/ui"
 )
 
 func main() {
