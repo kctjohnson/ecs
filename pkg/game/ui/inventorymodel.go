@@ -164,16 +164,22 @@ func (m InventoryModel) View() string {
 			if len(inventory.Slots) == 0 {
 				screen += "Empty\n"
 			} else {
-				for slot, itemEnt := range inventory.Slots {
-					if itemComp, hasItem := m.game.GetComponent(itemEnt, components.Item); hasItem {
-						item := itemComp.(*components.ItemComponent)
-						itemString := fmt.Sprintf("%s: %s", slot, item.Name)
-						slotSlice := m.slotsToSlice(inventory.Slots)
-						if m.activeHover < len(slotSlice) && slotSlice[m.activeHover] == itemEnt && m.sectionFocus == InventorySectionEquipment {
-							screen += itemHoverStyle.Render(itemString) + "\n"
-						} else {
-							screen += itemString + "\n"
+				orderedEquipment := makeOreredEquipmentSlice(inventory.Slots)
+				for i, slot := range orderedEquipment {
+					itemString := fmt.Sprintf("%s: ", slot.Label)
+					if slot.Item != -1 {
+						if itemComp, hasItem := m.game.GetComponent(slot.Item, components.Item); hasItem {
+							item := itemComp.(*components.ItemComponent)
+							itemString += item.Name
 						}
+					} else {
+						itemString += "Empty"
+					}
+
+					if i == m.activeHover && m.sectionFocus == InventorySectionEquipment {
+						screen += itemHoverStyle.Render(itemString) + "\n"
+					} else {
+						screen += itemString + "\n"
 					}
 				}
 			}

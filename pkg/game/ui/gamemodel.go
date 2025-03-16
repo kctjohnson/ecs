@@ -222,11 +222,18 @@ func (m GameModel) View() string {
 			if len(inventory.Slots) == 0 {
 				board += "Empty\n"
 			} else {
-				for slot, itemEnt := range inventory.Slots {
-					if itemComp, hasItem := g.GetComponent(itemEnt, components.Item); hasItem {
-						item := itemComp.(*components.ItemComponent)
-						board += fmt.Sprintf("%s: %s\n", slot, item.Name)
+				orderedEquipment := makeOreredEquipmentSlice(inventory.Slots)
+				for _, slot := range orderedEquipment {
+					itemString := fmt.Sprintf("%s: ", slot.Label)
+					if slot.Item != -1 {
+						if itemComp, hasItem := g.GetComponent(slot.Item, components.Item); hasItem {
+							item := itemComp.(*components.ItemComponent)
+							itemString += item.Name
+						}
+					} else {
+						itemString += "Empty"
 					}
+					board += itemString + "\n"
 				}
 			}
 		}
